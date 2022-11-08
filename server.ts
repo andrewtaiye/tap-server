@@ -1,6 +1,17 @@
-require("dotenv").config;
-import express, { Express, Request, Response } from "express";
+import "dotenv/config";
+import express, { Express } from "express";
 const cors = require("cors");
+const client = require("./db/db");
+
+// (async () => {
+//   const result = await client.query(
+//     `INSERT INTO users (username, password) VALUES ('test', '123');`,
+//     (err: Error, res: Response) => {
+//       if (err) throw err;
+//       console.log(res);
+//     }
+//   );
+// })();
 
 const app: Express = express();
 const userRouter = require("./routers/userRouter");
