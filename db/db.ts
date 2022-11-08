@@ -25,9 +25,9 @@ client.query(
 // Set up of tables
 client.query(
   `CREATE TABLE IF NOT EXISTS users (
-    id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    username varchar(20),
-    password varchar(20)
+    id uuid PRIMARY KEY DEFAULT uuid_generate_v4() UNIQUE,
+    username varchar(20) NOT NULL UNIQUE,
+    password varchar(20) NOT NULL
   );`,
   (err: Error, res: any) => {
     if (err) throw err;

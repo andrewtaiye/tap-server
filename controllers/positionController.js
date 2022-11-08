@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv").config;
 const getPosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log(req.params);
         res.json({ status: "ok", message: "position retrieved" });
     }
     catch (err) {

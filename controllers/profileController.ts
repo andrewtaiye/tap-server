@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 
 const getProfile = async (req: Request, res: Response) => {
   try {
-    console.log(req.params);
     res.json({ status: "ok", message: "profile retrieved" });
   } catch (err: any) {
     console.error(err.message);

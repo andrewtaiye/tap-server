@@ -11,13 +11,13 @@ const createUser = async (req: Request, res: Response) => {
     let result = await client.query(query);
 
     if (result.rowCount > 0) {
-      res.status(400).json({ status: "error", message: "username taken" });
+      res.status(400).json({ status: "error", message: "Username taken" });
       return;
     }
 
     // Check if passwords match
     if (password !== confirmPassword) {
-      res.json({ status: "error", message: "passwords do not match" });
+      res.json({ status: "error", message: "Passwords do not match" });
       return;
     }
 
@@ -39,39 +39,61 @@ const createUser = async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error(err.message);
-    res.status(400).json({ status: "error", message: "failed to create user" });
+    res.status(400).json({ status: "error", message: "Failed to create user" });
   }
 };
 
 const login = async (req: Request, res: Response) => {
   try {
-    const query = `SELECT * FROM users;`;
-    const result = await client.query(query);
-    console.log({ result });
-    res.json({ status: "ok", message: "login successful" });
+    const { username, password } = req.body;
+
+    // Check if username exists
+    let query = `SELECT * FROM users WHERE username = '${username}'`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0) {
+      res
+        .status(400)
+        .json({ status: "error", message: "Invalid Username or Password" });
+      return;
+    }
+
+    // Check if password matches
+    if (password !== result.rows[0].password) {
+      res
+        .status(400)
+        .json({ status: "error", message: "Invalid Username or Password" });
+      return;
+    }
+
+    res.json({
+      status: "ok",
+      message: "Login successful",
+      userId: result.rows[0].id,
+    });
   } catch (err: any) {
     console.error(err.message);
-    res.status(400).json({ status: "error", message: "failed to login" });
+    res.status(400).json({ status: "error", message: "Failed to login" });
   }
 };
 
 const updatePassword = async (req: Request, res: Response) => {
   try {
-    res.json({ status: "ok", message: "password updated" });
+    res.json({ status: "ok", message: "Password updated" });
   } catch (err: any) {
     console.error(err.message);
     res
       .status(400)
-      .json({ status: "error", message: "failed to update password" });
+      .json({ status: "error", message: "Failed to update password" });
   }
 };
 
 const deleteUser = async (req: Request, res: Response) => {
   try {
-    res.json({ status: "ok", message: "user deleted" });
+    res.json({ status: "ok", message: "User deleted" });
   } catch (err: any) {
     console.error(err.message);
-    res.status(400).json({ status: "error", message: "failed to delete user" });
+    res.status(400).json({ status: "error", message: "Failed to delete user" });
   }
 };
 
