@@ -1,6 +1,8 @@
 "use strict";
 const { Client } = require("pg");
+// Creation of new Client. Host, Port, User, Password, Database are automatically pulled from .env
 const client = new Client();
+// Connecting to DB
 client.connect((err) => {
     if (err) {
         console.error("connection error", err.stack);
@@ -9,6 +11,12 @@ client.connect((err) => {
         console.log(`PostgreSQL Database "${process.env.PGDATABASE}" connected on Port ${process.env.PGPORT}`);
     }
 });
+// If you intend to use UUID
+client.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`, (err, res) => {
+    if (err)
+        throw err;
+});
+// Set up of tables
 client.query(`CREATE TABLE IF NOT EXISTS users (
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     username varchar(20),
@@ -17,10 +25,7 @@ client.query(`CREATE TABLE IF NOT EXISTS users (
     if (err)
         throw err;
 });
-client.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`, (err, res) => {
-    if (err)
-        throw err;
-});
+// Export the query function to be used in your controllers
 module.exports = {
     query: (text, params, callback) => {
         return client.query(text, params, callback);
