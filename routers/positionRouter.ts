@@ -7,7 +7,7 @@ const {
   deletePosition,
 } = require("../controllers/positionController");
 
-router.get("/", getPosition);
+router.get("/get/:userId", getPosition);
 router.put("/create", createPosition);
 router.patch("/update", updatePosition);
 router.delete("/delete", deletePosition);

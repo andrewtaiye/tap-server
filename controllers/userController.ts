@@ -1,7 +1,7 @@
 require("dotenv").config;
 import { Request, Response } from "express";
 
-const createUser = (req: Request, res: Response) => {
+const createUser = async (req: Request, res: Response) => {
   try {
     res.json({ status: "ok", message: "user created" });
   } catch (err: any) {
@@ -10,7 +10,7 @@ const createUser = (req: Request, res: Response) => {
   }
 };
 
-const login = (req: Request, res: Response) => {
+const login = async (req: Request, res: Response) => {
   try {
     res.json({ status: "ok", message: "login successful" });
   } catch (err: any) {
@@ -19,7 +19,7 @@ const login = (req: Request, res: Response) => {
   }
 };
 
-const updatePassword = (req: Request, res: Response) => {
+const updatePassword = async (req: Request, res: Response) => {
   try {
     res.json({ status: "ok", message: "password updated" });
   } catch (err: any) {
@@ -30,7 +30,7 @@ const updatePassword = (req: Request, res: Response) => {
   }
 };
 
-const deleteUser = (req: Request, res: Response) => {
+const deleteUser = async (req: Request, res: Response) => {
   try {
     res.json({ status: "ok", message: "user deleted" });
   } catch (err: any) {

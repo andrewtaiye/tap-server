@@ -10,54 +10,53 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv").config;
-const getPosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAssessment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log(req.params);
-        res.json({ status: "ok", message: "position retrieved" });
+        res.json({ status: "ok", message: "assessment retrieved" });
     }
     catch (err) {
         console.error(err.message);
         res
             .status(400)
-            .json({ status: "error", message: "failed to retrieve position" });
+            .json({ status: "error", message: "failed to retrieve assessment" });
     }
 });
-const createPosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const createAssessment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        res.json({ status: "ok", message: "position created" });
+        res.json({ status: "ok", message: "assessment created" });
     }
     catch (err) {
         console.error(err.message);
         res
             .status(400)
-            .json({ status: "error", message: "failed to create position" });
+            .json({ status: "error", message: "failed to create assessment" });
     }
 });
-const updatePosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const updateAssessment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        res.json({ status: "ok", message: "position updated" });
+        res.json({ status: "ok", message: "assessment updated" });
     }
     catch (err) {
         console.error(err.message);
         res
             .status(400)
-            .json({ status: "error", message: "failed to update position" });
+            .json({ status: "error", message: "failed to update assessment" });
     }
 });
-const deletePosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteAssessment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        res.json({ status: "ok", message: "position deleted" });
+        res.json({ status: "ok", message: "assessment deleted" });
     }
     catch (err) {
         console.error(err.message);
         res
             .status(400)
-            .json({ status: "error", message: "failed to delete position" });
+            .json({ status: "error", message: "failed to delete assessment" });
     }
 });
 module.exports = {
-    getPosition,
-    createPosition,
-    updatePosition,
-    deletePosition,
+    getAssessment,
+    createAssessment,
+    updateAssessment,
+    deleteAssessment,
 };

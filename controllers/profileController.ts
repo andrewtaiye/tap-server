@@ -1,8 +1,9 @@
 require("dotenv").config;
 import { Request, Response } from "express";
 
-const getProfile = (req: Request, res: Response) => {
+const getProfile = async (req: Request, res: Response) => {
   try {
+    console.log(req.params);
     res.json({ status: "ok", message: "profile retrieved" });
   } catch (err: any) {
     console.error(err.message);
@@ -12,7 +13,7 @@ const getProfile = (req: Request, res: Response) => {
   }
 };
 
-const createProfile = (req: Request, res: Response) => {
+const createProfile = async (req: Request, res: Response) => {
   try {
     res.json({ status: "ok", message: "profile created" });
   } catch (err: any) {
@@ -23,7 +24,7 @@ const createProfile = (req: Request, res: Response) => {
   }
 };
 
-const updateProfile = (req: Request, res: Response) => {
+const updateProfile = async (req: Request, res: Response) => {
   try {
     res.json({ status: "ok", message: "profile updated" });
   } catch (err: any) {
@@ -34,7 +35,7 @@ const updateProfile = (req: Request, res: Response) => {
   }
 };
 
-const deleteProfile = (req: Request, res: Response) => {
+const deleteProfile = async (req: Request, res: Response) => {
   try {
     res.json({ status: "ok", message: "profile deleted" });
   } catch (err: any) {

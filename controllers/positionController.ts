@@ -1,8 +1,9 @@
 require("dotenv").config;
 import { Request, Response } from "express";
 
-const getPosition = (req: Request, res: Response) => {
+const getPosition = async (req: Request, res: Response) => {
   try {
+    console.log(req.params);
     res.json({ status: "ok", message: "position retrieved" });
   } catch (err: any) {
     console.error(err.message);
@@ -12,7 +13,7 @@ const getPosition = (req: Request, res: Response) => {
   }
 };
 
-const createPosition = (req: Request, res: Response) => {
+const createPosition = async (req: Request, res: Response) => {
   try {
     res.json({ status: "ok", message: "position created" });
   } catch (err: any) {
@@ -23,7 +24,7 @@ const createPosition = (req: Request, res: Response) => {
   }
 };
 
-const updatePosition = (req: Request, res: Response) => {
+const updatePosition = async (req: Request, res: Response) => {
   try {
     res.json({ status: "ok", message: "position updated" });
   } catch (err: any) {
@@ -34,7 +35,7 @@ const updatePosition = (req: Request, res: Response) => {
   }
 };
 
-const deletePosition = (req: Request, res: Response) => {
+const deletePosition = async (req: Request, res: Response) => {
   try {
     res.json({ status: "ok", message: "position deleted" });
   } catch (err: any) {

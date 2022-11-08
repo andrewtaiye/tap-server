@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 const { getPosition, createPosition, updatePosition, deletePosition, } = require("../controllers/positionController");
-router.get("/", getPosition);
+router.get("/get/:userId", getPosition);
 router.put("/create", createPosition);
 router.patch("/update", updatePosition);
 router.delete("/delete", deletePosition);
