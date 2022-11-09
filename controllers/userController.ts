@@ -1,6 +1,7 @@
 require("dotenv").config;
 import { Request, Response } from "express";
 const client = require("../db/db");
+const { fetchCall } = require("../utility/utility");
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -66,11 +67,25 @@ const login = async (req: Request, res: Response) => {
       return;
     }
 
-    res.json({
-      status: "ok",
-      message: "Login successful",
-      userId: result.rows[0].id,
-    });
+    // Check if profile exists
+    let url = `http://127.0.0.1:5001/profile/get/${result.rows[0].id}`;
+    let response = await fetchCall(url);
+
+    if (response.status === "ok") {
+      res.json({
+        status: "ok",
+        message: "Login successful",
+        userId: result.rows[0].id,
+        hasProfile: true,
+      });
+    } else {
+      res.json({
+        status: "ok",
+        message: "Login successful, no profile",
+        userId: result.rows[0].id,
+        hasProfile: false,
+      });
+    }
   } catch (err: any) {
     console.error(err.message);
     res.status(400).json({ status: "error", message: "Failed to login" });

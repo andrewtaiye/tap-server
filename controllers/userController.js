@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv").config;
 const client = require("../db/db");
+const { fetchCall } = require("../utility/utility");
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, password, confirmPassword } = req.body;
@@ -65,11 +66,25 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 .json({ status: "error", message: "Invalid Username or Password" });
             return;
         }
-        res.json({
-            status: "ok",
-            message: "Login successful",
-            userId: result.rows[0].id,
-        });
+        // Check if profile exists
+        let url = `http://127.0.0.1:5001/profile/get/${result.rows[0].id}`;
+        let response = yield fetchCall(url);
+        if (response.status === "ok") {
+            res.json({
+                status: "ok",
+                message: "Login successful",
+                userId: result.rows[0].id,
+                hasProfile: true,
+            });
+        }
+        else {
+            res.json({
+                status: "ok",
+                message: "Login successful, no profile",
+                userId: result.rows[0].id,
+                hasProfile: false,
+            });
+        }
     }
     catch (err) {
         console.error(err.message);

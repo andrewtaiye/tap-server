@@ -17,39 +17,27 @@ client.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`, (err, res) => {
         throw err;
 });
 // Set up of tables
-client.query(`CREATE TABLE IF NOT EXISTS users (
+client.query(`
+  CREATE TABLE IF NOT EXISTS users (
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4() UNIQUE,
     username varchar(20) NOT NULL UNIQUE,
     password varchar(20) NOT NULL
-  );`, (err, res) => {
-    if (err)
-        throw err;
-});
-client.query(`CREATE TABLE IF NOT EXISTS positions (
-    position char(3) NOT NULL PRIMARY KEY UNIQUE
-  )`, (err, res) => {
-    if (err)
-        throw err;
-});
-client.query(`CREATE TABLE IF NOT EXISTS ranks (
-    rank varchar(4) NOT NULL PRIMARY KEY UNIQUE
-  )`, (err, res) => {
-    if (err)
-        throw err;
-});
-client.query(`CREATE TABLE IF NOT EXISTS cats (
-    cat varchar(3) NOT NULL PRIMARY KEY UNIQUE
-  )`, (err, res) => {
-    if (err)
-        throw err;
-});
-client.query(`CREATE TABLE IF NOT EXISTS flights (
-    flight varchar(15) NOT NULL PRIMARY KEY UNIQUE
-  )`, (err, res) => {
-    if (err)
-        throw err;
-});
-client.query(`CREATE TABLE IF NOT EXISTS profiles (
+  );
+
+  CREATE TABLE IF NOT EXISTS positions (
+    positions char(3) NOT NULL PRIMARY KEY UNIQUE
+  );
+  CREATE TABLE IF NOT EXISTS ranks (
+    ranks varchar(4) NOT NULL PRIMARY KEY UNIQUE
+  );
+  CREATE TABLE IF NOT EXISTS cats (
+    cats varchar(3) NOT NULL PRIMARY KEY UNIQUE
+  );
+  CREATE TABLE IF NOT EXISTS flights (
+    flights varchar(15) NOT NULL PRIMARY KEY UNIQUE
+  );
+
+  CREATE TABLE IF NOT EXISTS profiles (
     user_id uuid PRIMARY KEY UNIQUE,
     rank varchar(4) NOT NULL,
     full_name varchar(50) NOT NULL,
@@ -59,14 +47,12 @@ client.query(`CREATE TABLE IF NOT EXISTS profiles (
     cat varchar(3) NOT NULL,
     flight varchar(15) NOT NULL,
     CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users (id),
-    CONSTRAINT FK_rank FOREIGN KEY (rank) REFERENCES ranks (rank),
-    CONSTRAINT FK_cat FOREIGN KEY (cat) REFERENCES cats (cat),
-    CONSTRAINT FK_flight FOREIGN KEY (flight) REFERENCES flights (flight)
-  )`, (err, res) => {
-    if (err)
-        throw err;
-});
-client.query(`CREATE TABLE IF NOT EXISTS user_positions (
+    CONSTRAINT FK_rank FOREIGN KEY (rank) REFERENCES ranks (ranks),
+    CONSTRAINT FK_cat FOREIGN KEY (cat) REFERENCES cats (cats),
+    CONSTRAINT FK_flight FOREIGN KEY (flight) REFERENCES flights (flights)
+  );
+
+  CREATE TABLE IF NOT EXISTS user_positions (
     id uuid PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
     user_id uuid NOT NULL,
     position char(3) NOT NULL,
@@ -76,12 +62,10 @@ client.query(`CREATE TABLE IF NOT EXISTS user_positions (
     is_revalidation boolean NOT NULL,
     is_instructor boolean NOT NULL,
     CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users (id),
-    CONSTRAINT FK_position FOREIGN KEY (position) REFERENCES positions (position)
-  )`, (err, res) => {
-    if (err)
-        throw err;
-});
-client.query(`CREATE TABLE IF NOT EXISTS assessments (
+    CONSTRAINT FK_position FOREIGN KEY (position) REFERENCES positions (positions)
+  );
+
+  CREATE TABLE IF NOT EXISTS assessments (
     id uuid PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
     user_position_id uuid NOT NULL,
     assessment_number smallint NOT NULL,
@@ -118,53 +102,53 @@ client.query(`CREATE TABLE IF NOT EXISTS assessments (
       j > 0 AND j <= 10 AND
       grade > 0 AND grade <= 100
     )
-  )`, (err, res) => {
+  );
+
+  CREATE TABLE IF NOT EXISTS tokens (
+    id uuid PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+    token varchar(50) NOT NULL,
+    type varchar(7) NOT NULL,
+    parent_token varchar(50)
+  );
+  `, (err, res) => {
     if (err)
         throw err;
-});
-client.query(`CREATE TABLE IF NOT EXISTS tokens (
-      id uuid PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
-      token varchar(50) NOT NULL,
-      type varchar(7) NOT NULL,
-      parent_token varchar(50)
-    )`, (err, res) => {
-    if (err)
-        throw err;
+    console.log("Tables Created");
 });
 // Insert default values for ranks, cats, flights, positions
 // client.query(`
-//   INSERT INTO ranks (rank) VALUES ('2LT');
-//   INSERT INTO ranks (rank) VALUES ('LTA');
-//   INSERT INTO ranks (rank) VALUES ('CPT');
-//   INSERT INTO ranks (rank) VALUES ('MAJ');
-//   INSERT INTO ranks (rank) VALUES ('LTC');
-//   INSERT INTO ranks (rank) VALUES ('SLTC');
-//   INSERT INTO ranks (rank) VALUES ('COL');
-//   INSERT INTO ranks (rank) VALUES ('BG');
-//   INSERT INTO ranks (rank) VALUES ('MG');
-//   INSERT INTO ranks (rank) VALUES ('LG');
-//   INSERT INTO cats (cat) VALUES ('A');
-//   INSERT INTO cats (cat) VALUES ('B');
-//   INSERT INTO cats (cat) VALUES ('C');
-//   INSERT INTO cats (cat) VALUES ('D');
-//   INSERT INTO cats (cat) VALUES ('CNX');
-//   INSERT INTO flights (flight) VALUES ('HQ');
-//   INSERT INTO flights (flight) VALUES ('S3');
-//   INSERT INTO flights (flight) VALUES ('APP');
-//   INSERT INTO flights (flight) VALUES ('AREA');
-//   INSERT INTO flights (flight) VALUES ('OPS HUB');
-//   INSERT INTO flights (flight) VALUES ('PARTICIPATION');
-//   INSERT INTO flights (flight) VALUES ('TRAINING');
-//   INSERT INTO flights (flight) VALUES ('CMS');
-//   INSERT INTO positions (position) VALUES ('CNX');
-//   INSERT INTO positions (position) VALUES ('FIS');
-//   INSERT INTO positions (position) VALUES ('DEP');
-//   INSERT INTO positions (position) VALUES ('ARR');
-//   INSERT INTO positions (position) VALUES ('TAP');
-//   INSERT INTO positions (position) VALUES ('TAC');
-//   INSERT INTO positions (position) VALUES ('PAP');
-//   INSERT INTO positions (position) VALUES ('PAC');
-//   INSERT INTO positions (position) VALUES ('ISL');
+//   INSERT INTO ranks (ranks) VALUES ('2LT');
+//   INSERT INTO ranks (ranks) VALUES ('LTA');
+//   INSERT INTO ranks (ranks) VALUES ('CPT');
+//   INSERT INTO ranks (ranks) VALUES ('MAJ');
+//   INSERT INTO ranks (ranks) VALUES ('LTC');
+//   INSERT INTO ranks (ranks) VALUES ('SLTC');
+//   INSERT INTO ranks (ranks) VALUES ('COL');
+//   INSERT INTO ranks (ranks) VALUES ('BG');
+//   INSERT INTO ranks (ranks) VALUES ('MG');
+//   INSERT INTO ranks (ranks) VALUES ('LG');
+//   INSERT INTO cats (cats) VALUES ('A');
+//   INSERT INTO cats (cats) VALUES ('B');
+//   INSERT INTO cats (cats) VALUES ('C');
+//   INSERT INTO cats (cats) VALUES ('D');
+//   INSERT INTO cats (cats) VALUES ('CNX');
+//   INSERT INTO flights (flights) VALUES ('HQ');
+//   INSERT INTO flights (flights) VALUES ('S3');
+//   INSERT INTO flights (flights) VALUES ('APP');
+//   INSERT INTO flights (flights) VALUES ('AREA');
+//   INSERT INTO flights (flights) VALUES ('OPS HUB');
+//   INSERT INTO flights (flights) VALUES ('PARTICIPATION');
+//   INSERT INTO flights (flights) VALUES ('TRAINING');
+//   INSERT INTO flights (flights) VALUES ('CMS');
+//   INSERT INTO positions (positions) VALUES ('CNX');
+//   INSERT INTO positions (positions) VALUES ('FIS');
+//   INSERT INTO positions (positions) VALUES ('DEP');
+//   INSERT INTO positions (positions) VALUES ('ARR');
+//   INSERT INTO positions (positions) VALUES ('TAP');
+//   INSERT INTO positions (positions) VALUES ('TAC');
+//   INSERT INTO positions (positions) VALUES ('PAP');
+//   INSERT INTO positions (positions) VALUES ('PAC');
+//   INSERT INTO positions (positions) VALUES ('ISL');
 // `);
 // Export the query function to be used in your controllers
 module.exports = {
