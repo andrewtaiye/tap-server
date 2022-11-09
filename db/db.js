@@ -60,8 +60,8 @@ client.query(`
     start_date date NOT NULL,
     end_date date,
     approval_date date,
-    is_revalidation boolean NOT NULL,
-    is_instructor boolean NOT NULL,
+    is_revalidation boolean NOT NULL DEFAULT false,
+    is_instructor boolean NOT NULL DEFAULT false,
     CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT FK_position FOREIGN KEY (position) REFERENCES positions (positions)
   );

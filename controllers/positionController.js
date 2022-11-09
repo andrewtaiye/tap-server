@@ -61,9 +61,11 @@ const createPosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
       INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date, is_revalidation)
       VALUES ('${user_id}', '${position}', '${start_date}', '${end_date}', '${approval_date}', ${is_revalidation});
     `;
+        yield client.query(query);
+        query = `SELECT id FROM user_positions WHERE user_id = '${user_id}' AND position = '${position}';`;
         result = yield client.query(query);
-        // TODO: Finish linking up to front end
-        res.json({ status: "ok", message: "Position created" });
+        const data = { id: result.rows[0].id };
+        res.json({ status: "ok", message: "Position created", data });
     }
     catch (err) {
         console.error(err.message);

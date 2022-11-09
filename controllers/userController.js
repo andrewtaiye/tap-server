@@ -32,14 +32,15 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
       INSERT INTO users (username, password)
       VALUES ('${username}', '${password}')
       `;
-        result = yield client.query(query);
+        yield client.query(query);
         // Retrieve generated User ID
         query = `SELECT id FROM users WHERE username = '${username}'`;
         result = yield client.query(query);
+        const data = { userId: result.rows[0].id };
         res.json({
             status: "ok",
             message: "user created",
-            userId: result.rows[0].id,
+            data,
         });
     }
     catch (err) {
@@ -69,22 +70,24 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // Check if profile exists
         let url = `http://127.0.0.1:5001/profile/get/${result.rows[0].id}`;
         let response = yield fetchCall(url);
-        if (response.status === "ok") {
-            res.json({
-                status: "ok",
-                message: "Login successful",
-                userId: result.rows[0].id,
-                hasProfile: true,
-            });
-        }
-        else {
+        const data = {
+            userId: result.rows[0].id,
+            hasProfile: true,
+        };
+        if (response.status !== "ok") {
+            data.hasProfile = false;
             res.json({
                 status: "ok",
                 message: "Login successful, no profile",
-                userId: result.rows[0].id,
-                hasProfile: false,
+                data,
             });
+            return;
         }
+        res.json({
+            status: "ok",
+            message: "Login successful",
+            data,
+        });
     }
     catch (err) {
         console.error(err.message);

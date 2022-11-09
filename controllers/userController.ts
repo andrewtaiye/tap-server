@@ -27,16 +27,18 @@ const createUser = async (req: Request, res: Response) => {
       INSERT INTO users (username, password)
       VALUES ('${username}', '${password}')
       `;
-    result = await client.query(query);
+    await client.query(query);
 
     // Retrieve generated User ID
     query = `SELECT id FROM users WHERE username = '${username}'`;
     result = await client.query(query);
 
+    const data = { userId: result.rows[0].id };
+
     res.json({
       status: "ok",
       message: "user created",
-      userId: result.rows[0].id,
+      data,
     });
   } catch (err: any) {
     console.error(err.message);
@@ -71,21 +73,26 @@ const login = async (req: Request, res: Response) => {
     let url = `http://127.0.0.1:5001/profile/get/${result.rows[0].id}`;
     let response = await fetchCall(url);
 
-    if (response.status === "ok") {
-      res.json({
-        status: "ok",
-        message: "Login successful",
-        userId: result.rows[0].id,
-        hasProfile: true,
-      });
-    } else {
+    const data = {
+      userId: result.rows[0].id,
+      hasProfile: true,
+    };
+
+    if (response.status !== "ok") {
+      data.hasProfile = false;
       res.json({
         status: "ok",
         message: "Login successful, no profile",
-        userId: result.rows[0].id,
-        hasProfile: false,
+        data,
       });
+      return;
     }
+
+    res.json({
+      status: "ok",
+      message: "Login successful",
+      data,
+    });
   } catch (err: any) {
     console.error(err.message);
     res.status(400).json({ status: "error", message: "Failed to login" });
