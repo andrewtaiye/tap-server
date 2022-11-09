@@ -1,13 +1,13 @@
 import express from "express";
 const router = express.Router();
 const {
-  getPosition,
+  getPositions,
   createPosition,
   updatePosition,
   deletePosition,
 } = require("../controllers/positionController");
 
-router.get("/get/:userId", getPosition);
+router.get("/get/:userId", getPositions);
 router.put("/create", createPosition);
 router.patch("/update", updatePosition);
 router.delete("/delete", deletePosition);
