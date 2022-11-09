@@ -41,6 +41,7 @@ client.query(`
     user_id uuid PRIMARY KEY UNIQUE,
     rank varchar(4) NOT NULL,
     full_name varchar(50) NOT NULL,
+    id_number varchar(9) NOT NULL,
     date_of_birth date NOT NULL,
     date_accepted date NOT NULL,
     reporting_date date NOT NULL,
