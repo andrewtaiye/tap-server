@@ -59,7 +59,7 @@ const createPosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
         // Insert new position
         query = `
       INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date, is_revalidation)
-      VALUES ('${user_id}', '${position}', '${start_date}', '${end_date}', '${approval_date}', ${is_revalidation});
+      VALUES ('${user_id}', '${position}', '${start_date}', ${end_date ? `'${end_date}'` : "null"}, ${approval_date ? `'${approval_date}'` : "null"}, ${is_revalidation});
     `;
         yield client.query(query);
         query = `SELECT id FROM user_positions WHERE user_id = '${user_id}' AND position = '${position}';`;

@@ -65,7 +65,9 @@ const createPosition = async (req: Request, res: Response) => {
     // Insert new position
     query = `
       INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date, is_revalidation)
-      VALUES ('${user_id}', '${position}', '${start_date}', '${end_date}', '${approval_date}', ${is_revalidation});
+      VALUES ('${user_id}', '${position}', '${start_date}', ${
+      end_date ? `'${end_date}'` : "null"
+    }, ${approval_date ? `'${approval_date}'` : "null"}, ${is_revalidation});
     `;
     await client.query(query);
 
