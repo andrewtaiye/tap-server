@@ -1,7 +1,6 @@
 import "dotenv/config";
 import express, { Express } from "express";
 const cors = require("cors");
-const client = require("./db/db");
 
 const app: Express = express();
 const userRouter = require("./routers/userRouter");
