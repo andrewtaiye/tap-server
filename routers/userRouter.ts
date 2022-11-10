@@ -9,7 +9,7 @@ const {
 
 router.put("/create", createUser);
 router.post("/login", login);
-router.patch("/update", updatePassword);
+router.patch("/update/:userId", updatePassword);
 router.delete("/delete", deleteUser);
 
 module.exports = router;

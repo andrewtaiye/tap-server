@@ -9,7 +9,7 @@ const {
 
 router.get("/get/:userId", getProfile);
 router.put("/create", createProfile);
-router.patch("/update", updateProfile);
+router.patch("/update/:userId", updateProfile);
 router.delete("/delete", deleteProfile);
 
 module.exports = router;

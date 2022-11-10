@@ -14,7 +14,7 @@ const client = require("../db/db");
 const { fetchCall } = require("../utility/utility");
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { username, password, confirmPassword } = req.body;
+        const { username, password, confirm_password } = req.body;
         // Check if username already exists
         let query = `SELECT username FROM users WHERE username = '${username}'`;
         let result = yield client.query(query);
@@ -23,7 +23,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             return;
         }
         // Check if passwords match
-        if (password !== confirmPassword) {
+        if (password !== confirm_password) {
             res.json({ status: "error", message: "Passwords do not match" });
             return;
         }
@@ -96,6 +96,30 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 const updatePassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const { userId: id } = req.params;
+        const { password, confirm_password } = req.body;
+        // Check if user exists
+        let query = `SELECT * FROM users WHERE id = '${id}';`;
+        let result = yield client.query(query);
+        if (result.rowCount === 0) {
+            console.log("Error: User does not exist");
+            res
+                .status(400)
+                .json({ status: "error", message: "Failed to update password" });
+            return;
+        }
+        // Check if password matches
+        if (password !== confirm_password) {
+            console.log("Error: Passwords do not match");
+            res
+                .status(400)
+                .json({ status: "error", message: "Passwords do not match" });
+            return;
+        }
+        // Update password
+        query = `UPDATE users SET password = '${password}' WHERE id = '${id}';`;
+        yield client.query(query);
+        console.log("Password updated");
         res.json({ status: "ok", message: "Password updated" });
     }
     catch (err) {
