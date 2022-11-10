@@ -42,9 +42,9 @@ client.query(`
     rank varchar(4) NOT NULL,
     full_name varchar(50) NOT NULL,
     id_number varchar(9) NOT NULL,
-    date_of_birth date NOT NULL,
-    date_accepted date NOT NULL,
-    reporting_date date NOT NULL,
+    date_of_birth int NOT NULL,
+    date_accepted int NOT NULL,
+    reporting_date int NOT NULL,
     cat varchar(3) NOT NULL,
     flight varchar(15) NOT NULL,
     CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users (id),
@@ -57,9 +57,9 @@ client.query(`
     id uuid PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
     user_id uuid NOT NULL,
     position char(3) NOT NULL,
-    start_date date NOT NULL,
-    end_date date,
-    approval_date date,
+    start_date int NOT NULL,
+    end_date int,
+    approval_date int,
     is_revalidation boolean NOT NULL DEFAULT false,
     is_instructor boolean NOT NULL DEFAULT false,
     CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users (id),
@@ -117,7 +117,8 @@ client.query(`
     console.log("Tables Created");
 });
 // Insert default values for ranks, cats, flights, positions
-// client.query(`
+// client.query(
+//   `
 //   INSERT INTO ranks (ranks) VALUES ('2LT');
 //   INSERT INTO ranks (ranks) VALUES ('LTA');
 //   INSERT INTO ranks (ranks) VALUES ('CPT');
@@ -150,7 +151,11 @@ client.query(`
 //   INSERT INTO positions (positions) VALUES ('PAP');
 //   INSERT INTO positions (positions) VALUES ('PAC');
 //   INSERT INTO positions (positions) VALUES ('ISL');
-// `);
+// `,
+//   (err: Error, res: any) => {
+//     console.log("Inserted Enums");
+//   }
+// );
 // Export the query function to be used in your controllers
 module.exports = {
     query: (text, params, callback) => {

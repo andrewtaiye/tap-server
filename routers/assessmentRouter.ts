@@ -7,7 +7,7 @@ const {
   deleteAssessment,
 } = require("../controllers/assessmentController");
 
-router.get("/get/:userId/:positionId", getAssessment);
+router.get("/get/:positionId", getAssessment);
 router.put("/create", createAssessment);
 router.patch("/update", updateAssessment);
 router.delete("/delete", deleteAssessment);

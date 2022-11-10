@@ -8,6 +8,6 @@ const router = express_1.default.Router();
 const { getPositions, createPosition, updatePosition, deletePosition, } = require("../controllers/positionController");
 router.get("/get/:userId", getPositions);
 router.put("/create", createPosition);
-router.patch("/update", updatePosition);
+router.patch("/update/:positionId", updatePosition);
 router.delete("/delete", deletePosition);
 module.exports = router;
