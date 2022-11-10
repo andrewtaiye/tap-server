@@ -26,7 +26,7 @@ const getPositions = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
         // Retrieve user positions
         query = `
-      SELECT * FROM user_positions WHERE user_id = '${userId}';
+      SELECT * FROM user_positions WHERE user_id = '${userId}' ORDER BY start_date;
     `;
         result = yield client.query(query);
         if (result.rowCount === 0) {
@@ -59,7 +59,9 @@ const createPosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
         // Insert new position
         query = `
       INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date, is_revalidation)
-      VALUES ('${user_id}', '${position}', '${start_date}', ${end_date ? `'${end_date}'` : "null"}, ${approval_date ? `'${approval_date}'` : "null"}, ${is_revalidation});
+      VALUES ('${user_id}', '${position}', ${start_date},
+      ${end_date ? end_date : "null"},
+      ${approval_date ? approval_date : "null"}, ${is_revalidation});
     `;
         yield client.query(query);
         query = `SELECT id FROM user_positions WHERE user_id = '${user_id}' AND position = '${position}';`;
@@ -76,6 +78,25 @@ const createPosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 const updatePosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const { position, start_date, end_date, approval_date, is_revalidation } = req.body;
+        const { positionId: id } = req.params;
+        // Check if user-position exists
+        let query = `SELECT id FROM user_positions WHERE id = '${id}';`;
+        let result = yield client.query(query);
+        if (result.rowCount === 0) {
+            console.log("Error: User-Position does not exist");
+            res
+                .status(400)
+                .json({ status: "error", message: "Failed to update position" });
+            return;
+        }
+        // Update position
+        query = `
+    UPDATE user_positions
+    SET position = '${position}', start_date = ${start_date}, end_date = ${end_date}, approval_date = ${approval_date}, is_revalidation = '${is_revalidation}'
+    WHERE id = '${id}';
+    `;
+        yield client.query(query);
         res.json({ status: "ok", message: "Position updated" });
     }
     catch (err) {
@@ -87,6 +108,9 @@ const updatePosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 const deletePosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const { positionId: id } = req.params;
+        let query = `DELETE FROM user_positions WHERE id = '${id}';`;
+        yield client.query(query);
         res.json({ status: "ok", message: "Position deleted" });
     }
     catch (err) {

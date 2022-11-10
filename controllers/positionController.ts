@@ -20,7 +20,7 @@ const getPositions = async (req: Request, res: Response) => {
 
     // Retrieve user positions
     query = `
-      SELECT * FROM user_positions WHERE user_id = '${userId}';
+      SELECT * FROM user_positions WHERE user_id = '${userId}' ORDER BY start_date;
     `;
     result = await client.query(query);
 
@@ -65,9 +65,9 @@ const createPosition = async (req: Request, res: Response) => {
     // Insert new position
     query = `
       INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date, is_revalidation)
-      VALUES ('${user_id}', '${position}', '${start_date}', ${
-      end_date ? `'${end_date}'` : "null"
-    }, ${approval_date ? `'${approval_date}'` : "null"}, ${is_revalidation});
+      VALUES ('${user_id}', '${position}', ${start_date},
+      ${end_date ? end_date : "null"},
+      ${approval_date ? approval_date : "null"}, ${is_revalidation});
     `;
     await client.query(query);
 
@@ -87,6 +87,30 @@ const createPosition = async (req: Request, res: Response) => {
 
 const updatePosition = async (req: Request, res: Response) => {
   try {
+    const { position, start_date, end_date, approval_date, is_revalidation } =
+      req.body;
+    const { positionId: id } = req.params;
+
+    // Check if user-position exists
+    let query = `SELECT id FROM user_positions WHERE id = '${id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0) {
+      console.log("Error: User-Position does not exist");
+      res
+        .status(400)
+        .json({ status: "error", message: "Failed to update position" });
+      return;
+    }
+
+    // Update position
+    query = `
+    UPDATE user_positions
+    SET position = '${position}', start_date = ${start_date}, end_date = ${end_date}, approval_date = ${approval_date}, is_revalidation = '${is_revalidation}'
+    WHERE id = '${id}';
+    `;
+    await client.query(query);
+
     res.json({ status: "ok", message: "Position updated" });
   } catch (err: any) {
     console.error(err.message);
@@ -98,6 +122,11 @@ const updatePosition = async (req: Request, res: Response) => {
 
 const deletePosition = async (req: Request, res: Response) => {
   try {
+    const { positionId: id } = req.params;
+
+    let query = `DELETE FROM user_positions WHERE id = '${id}';`;
+    await client.query(query);
+
     res.json({ status: "ok", message: "Position deleted" });
   } catch (err: any) {
     console.error(err.message);

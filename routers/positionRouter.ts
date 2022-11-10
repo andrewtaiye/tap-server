@@ -10,6 +10,6 @@ const {
 router.get("/get/:userId", getPositions);
 router.put("/create", createPosition);
 router.patch("/update/:positionId", updatePosition);
-router.delete("/delete", deletePosition);
+router.delete("/delete/:positionId", deletePosition);
 
 module.exports = router;
