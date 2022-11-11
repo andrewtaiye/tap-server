@@ -159,20 +159,8 @@ const updateProfile = async (req: Request, res: Response) => {
   }
 };
 
-const deleteProfile = async (req: Request, res: Response) => {
-  try {
-    res.json({ status: "ok", message: "Profile deleted" });
-  } catch (err: any) {
-    console.error(err.message);
-    res
-      .status(400)
-      .json({ status: "error", message: "Failed to delete profile" });
-  }
-};
-
 module.exports = {
   getProfile,
   createProfile,
   updateProfile,
-  deleteProfile,
 };

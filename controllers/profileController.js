@@ -132,20 +132,8 @@ const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             .json({ status: "error", message: "Failed to update profile" });
     }
 });
-const deleteProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        res.json({ status: "ok", message: "Profile deleted" });
-    }
-    catch (err) {
-        console.error(err.message);
-        res
-            .status(400)
-            .json({ status: "error", message: "Failed to delete profile" });
-    }
-});
 module.exports = {
     getProfile,
     createProfile,
     updateProfile,
-    deleteProfile,
 };
