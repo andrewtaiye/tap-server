@@ -10,8 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const client = require("./db");
-const create_table = () => __awaiter(void 0, void 0, void 0, function* () {
-    let query = `SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public');`;
+const seed = () => __awaiter(void 0, void 0, void 0, function* () {
+    let query = `
+    SELECT EXISTS (
+        SELECT FROM pg_tables 
+        WHERE schemaname = 'public'
+    );
+  `;
     let result = yield client.query(query);
     if (result.rows[0].exists) {
         console.log("Tables already exist");
@@ -119,6 +124,7 @@ const create_table = () => __awaiter(void 0, void 0, void 0, function* () {
     `, (err, res) => {
         if (err)
             throw err;
+        console.log(res);
         console.log("Tables Created");
     });
     // Insert default values for ranks, cats, flights, positions
@@ -161,4 +167,4 @@ const create_table = () => __awaiter(void 0, void 0, void 0, function* () {
         console.log("Inserted Enums");
     });
 });
-module.exports = create_table;
+module.exports = seed;

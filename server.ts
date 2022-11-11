@@ -1,8 +1,8 @@
 import "dotenv/config";
 import express, { Express } from "express";
 const cors = require("cors");
-const create_table = require("./db/seed");
-create_table();
+const seed = require("./db/seed");
+seed();
 
 const app: Express = express();
 const userRouter = require("./routers/userRouter");

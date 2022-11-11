@@ -1,7 +1,12 @@
 const client = require("./db");
 
-const create_table = async () => {
-  let query = `SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public');`;
+const seed = async () => {
+  let query = `
+    SELECT EXISTS (
+        SELECT FROM pg_tables 
+        WHERE schemaname = 'public'
+    );
+  `;
   let result = await client.query(query);
 
   if (result.rows[0].exists) {
@@ -112,6 +117,7 @@ const create_table = async () => {
     `,
     (err: Error, res: any) => {
       if (err) throw err;
+      console.log(res);
       console.log("Tables Created");
     }
   );
@@ -162,4 +168,4 @@ const create_table = async () => {
 
 export {};
 
-module.exports = create_table;
+module.exports = seed;
