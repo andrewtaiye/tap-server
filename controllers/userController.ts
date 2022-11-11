@@ -141,6 +141,38 @@ const updatePassword = async (req: Request, res: Response) => {
 
 const deleteUser = async (req: Request, res: Response) => {
   try {
+    const { userId: user_id } = req.params;
+
+    // Check if user exists
+    let query = `SELECT id FROM users WHERE id = '${user_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0) {
+      console.log("Error: User does not exist");
+      res
+        .status(400)
+        .json({ status: "error", message: "Failed to delete user" });
+      return;
+    }
+
+    // Retrieve user_position ID
+    query = `SELECT id FROM user_positions WHERE user_id = '${user_id}';`;
+    result = await client.query(query);
+
+    const { id: user_position_id } = result.rows[0];
+
+    // Delete User, Profile, User_Positions, Assessments
+    query = `
+      BEGIN;
+        DELETE FROM assessments WHERE user_position_id = '${user_position_id}';
+        DELETE FROM user_positions WHERE user_id = '${user_id}';
+        DELETE FROM profiles WHERE user_id = '${user_id}';
+        DELETE FROM users WHERE id = '${user_id}';
+      COMMIT;
+    `;
+    await client.query(query);
+
+    console.log("User Deleted");
     res.json({ status: "ok", message: "User deleted" });
   } catch (err: any) {
     console.error(err.message);

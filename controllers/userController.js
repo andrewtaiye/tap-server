@@ -131,6 +131,32 @@ const updatePassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const { userId: user_id } = req.params;
+        // Check if user exists
+        let query = `SELECT id FROM users WHERE id = '${user_id}';`;
+        let result = yield client.query(query);
+        if (result.rowCount === 0) {
+            console.log("Error: User does not exist");
+            res
+                .status(400)
+                .json({ status: "error", message: "Failed to delete user" });
+            return;
+        }
+        // Retrieve user_position ID
+        query = `SELECT id FROM user_positions WHERE user_id = '${user_id}';`;
+        result = yield client.query(query);
+        const { id: user_position_id } = result.rows[0];
+        // Delete User, Profile, User_Positions, Assessments
+        query = `
+      BEGIN;
+        DELETE FROM assessments WHERE user_position_id = '${user_position_id}';
+        DELETE FROM user_positions WHERE user_id = '${user_id}';
+        DELETE FROM profiles WHERE user_id = '${user_id}';
+        DELETE FROM users WHERE id = '${user_id}';
+      COMMIT;
+    `;
+        yield client.query(query);
+        console.log("User Deleted");
         res.json({ status: "ok", message: "User deleted" });
     }
     catch (err) {

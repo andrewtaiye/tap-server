@@ -9,5 +9,5 @@ const { createUser, login, updatePassword, deleteUser, } = require("../controlle
 router.put("/create", createUser);
 router.post("/login", login);
 router.patch("/update/:userId", updatePassword);
-router.delete("/delete", deleteUser);
+router.delete("/delete/:userId", deleteUser);
 module.exports = router;
