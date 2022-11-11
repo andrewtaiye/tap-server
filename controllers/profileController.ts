@@ -126,6 +126,7 @@ const updateProfile = async (req: Request, res: Response) => {
       return;
     }
 
+    // Update user profile
     query = `
     UPDATE profiles
     SET date_of_birth = ${date_of_birth}, id_number = '${id_number}', date_accepted = ${date_accepted}, reporting_date = ${reporting_date}, flight = '${flight}', cat = '${cat}'
@@ -133,6 +134,7 @@ const updateProfile = async (req: Request, res: Response) => {
     `;
     await client.query(query);
 
+    // Update user password
     let url = `http://127.0.0.1:5001/user/update/${user_id}`;
     let response = await fetchCall(url, "PATCH", {
       password,

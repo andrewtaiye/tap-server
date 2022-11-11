@@ -102,12 +102,14 @@ const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 .json({ status: "error", message: "Passwords do not match" });
             return;
         }
+        // Update user profile
         query = `
     UPDATE profiles
     SET date_of_birth = ${date_of_birth}, id_number = '${id_number}', date_accepted = ${date_accepted}, reporting_date = ${reporting_date}, flight = '${flight}', cat = '${cat}'
     WHERE user_id = '${user_id}';
     `;
         yield client.query(query);
+        // Update user password
         let url = `http://127.0.0.1:5001/user/update/${user_id}`;
         let response = yield fetchCall(url, "PATCH", {
             password,
