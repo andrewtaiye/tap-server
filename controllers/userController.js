@@ -81,14 +81,21 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (response.status !== "ok") {
             payload.hasProfile = false;
         }
+        const accessId = uuidv4();
         const access = jwt.sign(payload, process.env.ACCESS_SECRET, {
             expiresIn: "20m",
-            jwtid: uuidv4(),
+            jwtid: accessId,
         });
+        const refreshId = uuidv4();
         const refresh = jwt.sign(payload, process.env.REFRESH_SECRET, {
             expiresIn: "30d",
-            jwtid: uuidv4(),
+            jwtid: refreshId,
         });
+        query = `
+      INSERT INTO tokens VALUES ('${accessId}', 'access', null);
+      INSERT INTO tokens VALUES ('${refreshId}', 'refresh', '${accessId}');
+    `;
+        yield client.query(query);
         const data = {
             access,
             refresh,
@@ -177,9 +184,25 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(400).json({ status: "error", message: "Failed to delete user" });
     }
 });
+const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.replace("Bearer ", "");
+        const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
+        let query = `DELETE FROM tokens WHERE id = '${decoded.jti}' OR parent_id = '${decoded.jti}';`;
+        yield client.query(query);
+        console.log("Cleared tokens, logging out");
+        res.json({ status: "ok", message: "Logged out" });
+    }
+    catch (err) {
+        console.error(err.message);
+        res.status(400).json({ status: "error", message: "Failed to delete user" });
+    }
+});
 module.exports = {
     createUser,
     login,
     updatePassword,
     deleteUser,
+    logout,
 };

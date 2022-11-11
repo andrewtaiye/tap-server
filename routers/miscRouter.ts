@@ -36,18 +36,25 @@ router.post("/refresh", async (req, res) => {
     const { refresh } = req.body;
 
     const decoded = jwt.verify(refresh, process.env.REFRESH_SECRET);
-
     const payload = {
       userId: decoded.userId,
       hasProfile: decoded.hasProfile,
     };
 
+    const accessId = uuidv4();
     const access = jwt.sign(payload, process.env.ACCESS_SECRET, {
       expiresIn: "20m",
-      jwtid: uuidv4(),
+      jwtid: accessId,
     });
 
     const data = { access };
+
+    let query = `
+      DELETE FROM tokens WHERE id = (SELECT parent_id FROM tokens WHERE id = '${decoded.jti}');
+      INSERT INTO tokens VALUES ('${accessId}', 'access', null);
+      UPDATE tokens SET parent_id = '${accessId}' WHERE id = '${decoded.jti}';
+    `;
+    await client.query(query);
 
     console.log("Token refreshed");
     res.json({ status: "ok", message: "Token refreshed", data });

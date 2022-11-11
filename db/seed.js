@@ -70,9 +70,9 @@ const seed = (seedAll) => __awaiter(void 0, void 0, void 0, function* () {
       false
     );
 
-    INSERT INTO tokens (token, type, parent_token) VALUES ('1', '1', '1');
+    INSERT INTO tokens (id, type, parent_id) VALUES ('a3bc9288-ef05-4873-be4c-4b35436f852e', '1', 'a3bc9288-ef05-4873-be4c-4b35436f852e');
 
-    DELETE FROM tokens WHERE token = '1' AND type = '1' AND parent_token = '1';
+    DELETE FROM tokens WHERE id = 'a3bc9288-ef05-4873-be4c-4b35436f852e' AND type = '1' AND parent_id = 'a3bc9288-ef05-4873-be4c-4b35436f852e';
     DELETE FROM assessments WHERE user_position_id = (
       SELECT id FROM user_positions WHERE user_id = (
         SELECT id FROM users WHERE username = '1') AND position = 'ARR'
@@ -182,16 +182,15 @@ const seed = (seedAll) => __awaiter(void 0, void 0, void 0, function* () {
           );
       
           CREATE TABLE IF NOT EXISTS tokens (
-          id uuid PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
-          token varchar(50) NOT NULL,
+          id uuid PRIMARY KEY UNIQUE,
           type varchar(7) NOT NULL,
-          parent_token varchar(50)
+          parent_id uuid
           );
   
       COMMIT;
   
-      INSERT INTO tokens (token, type, parent_token) VALUES ('1', '1', '1');
-      DELETE FROM tokens WHERE token = '1' AND type = '1' AND parent_token = '1';
+      INSERT INTO tokens (id, type, parent_id) VALUES ('a3bc9288-ef05-4873-be4c-4b35436f852e', '1', 'a3bc9288-ef05-4873-be4c-4b35436f852e');
+      DELETE FROM tokens WHERE id = 'a3bc9288-ef05-4873-be4c-4b35436f852e' AND type = '1' AND parent_id = 'a3bc9288-ef05-4873-be4c-4b35436f852e';
       `, (err, res) => {
             if (err)
                 throw err;
