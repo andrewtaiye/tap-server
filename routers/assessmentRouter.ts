@@ -9,7 +9,7 @@ const {
 
 router.get("/get/:positionId", getAssessment);
 router.put("/create", createAssessment);
-router.patch("/update", updateAssessment);
-router.delete("/delete", deleteAssessment);
+router.patch("/update/:assessmentId", updateAssessment);
+router.delete("/delete/:assessmentId", deleteAssessment);
 
 module.exports = router;

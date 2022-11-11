@@ -34,6 +34,7 @@ const getPositions = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             return;
         }
         const data = result.rows;
+        console.log("Positions retrieved");
         res.json({ status: "ok", message: "Positions retrieved", data });
     }
     catch (err) {

@@ -30,6 +30,7 @@ const getPositions = async (req: Request, res: Response) => {
     }
 
     const data = result.rows;
+    console.log("Positions retrieved");
     res.json({ status: "ok", message: "Positions retrieved", data });
   } catch (err: any) {
     console.error(err.message);
