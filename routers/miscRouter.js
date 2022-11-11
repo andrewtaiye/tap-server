@@ -15,7 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 const client = require("../db/db");
-router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const jwt = require("jsonwebtoken");
+const { v4: uuidv4 } = require("uuid");
+router.get("/enum", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const enumTables = ["ranks", "flights", "cats", "positions"];
         let data = {};
@@ -35,6 +37,29 @@ router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res
             .status(400)
             .json({ status: "error", message: "Failed to get default values" });
+    }
+}));
+router.post("/refresh", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { refresh } = req.body;
+        const decoded = jwt.verify(refresh, process.env.REFRESH_SECRET);
+        const payload = {
+            userId: decoded.userId,
+            hasProfile: decoded.hasProfile,
+        };
+        const access = jwt.sign(payload, process.env.ACCESS_SECRET, {
+            expiresIn: "20m",
+            jwtid: uuidv4(),
+        });
+        const data = { access };
+        console.log("Token refreshed");
+        res.json({ status: "ok", message: "Token refreshed", data });
+    }
+    catch (err) {
+        console.error(err.message);
+        res
+            .status(400)
+            .json({ status: "error", message: "Failed to refresh token" });
     }
 }));
 module.exports = router;

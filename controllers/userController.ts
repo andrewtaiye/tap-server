@@ -2,6 +2,8 @@ require("dotenv").config;
 import { Request, Response } from "express";
 const client = require("../db/db");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { v4: uuidv4 } = require("uuid");
 const { fetchCall } = require("../utility/utility");
 
 const createUser = async (req: Request, res: Response) => {
@@ -74,20 +76,29 @@ const login = async (req: Request, res: Response) => {
     let url = `http://127.0.0.1:5001/profile/get/${result.rows[0].id}`;
     let response = await fetchCall(url);
 
-    const data = {
+    const payload = {
       userId: result.rows[0].id,
       hasProfile: true,
     };
 
     if (response.status !== "ok") {
-      data.hasProfile = false;
-      res.json({
-        status: "ok",
-        message: "Login successful, no profile",
-        data,
-      });
-      return;
+      payload.hasProfile = false;
     }
+
+    const access = jwt.sign(payload, process.env.ACCESS_SECRET, {
+      expiresIn: "20m",
+      jwtid: uuidv4(),
+    });
+
+    const refresh = jwt.sign(payload, process.env.REFRESH_SECRET, {
+      expiresIn: "30d",
+      jwtid: uuidv4(),
+    });
+
+    const data = {
+      access,
+      refresh,
+    };
 
     res.json({
       status: "ok",
