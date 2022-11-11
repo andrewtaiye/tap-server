@@ -7,7 +7,7 @@ require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const cors = require("cors");
 const seed = require("./db/seed");
-seed();
+seed(true);
 const app = (0, express_1.default)();
 const userRouter = require("./routers/userRouter");
 const profileRouter = require("./routers/profileRouter");

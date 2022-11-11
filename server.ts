@@ -2,7 +2,7 @@ import "dotenv/config";
 import express, { Express } from "express";
 const cors = require("cors");
 const seed = require("./db/seed");
-seed();
+seed(true);
 
 const app: Express = express();
 const userRouter = require("./routers/userRouter");
