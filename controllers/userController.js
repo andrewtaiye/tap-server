@@ -145,11 +145,14 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         // Retrieve user_position ID
         query = `SELECT id FROM user_positions WHERE user_id = '${user_id}';`;
         result = yield client.query(query);
-        const { id: user_position_id } = result.rows[0];
+        let user_position_delete_query = "";
+        for (const position of result.rows) {
+            user_position_delete_query += `DELETE FROM assessments WHERE user_position_id = '${position.id}';`;
+        }
         // Delete User, Profile, User_Positions, Assessments
         query = `
       BEGIN;
-        DELETE FROM assessments WHERE user_position_id = '${user_position_id}';
+        ${user_position_delete_query}
         DELETE FROM user_positions WHERE user_id = '${user_id}';
         DELETE FROM profiles WHERE user_id = '${user_id}';
         DELETE FROM users WHERE id = '${user_id}';
