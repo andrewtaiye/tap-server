@@ -1,5 +1,6 @@
 import express from "express";
 const router = express.Router();
+const auth = require("../middleware/auth");
 const {
   getProfile,
   createProfile,
@@ -7,7 +8,7 @@ const {
 } = require("../controllers/profileController");
 
 router.get("/get/:userId", getProfile);
-router.put("/create", createProfile);
-router.patch("/update/:userId", updateProfile);
+router.put("/create", auth, createProfile);
+router.patch("/update/:userId", auth, updateProfile);
 
 module.exports = router;

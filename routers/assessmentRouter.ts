@@ -1,5 +1,6 @@
 import express from "express";
 const router = express.Router();
+const auth = require("../middleware/auth");
 const {
   getAssessment,
   createAssessment,
@@ -7,9 +8,9 @@ const {
   deleteAssessment,
 } = require("../controllers/assessmentController");
 
-router.get("/get/:positionId", getAssessment);
-router.put("/create", createAssessment);
-router.patch("/update/:assessmentId", updateAssessment);
-router.delete("/delete/:assessmentId", deleteAssessment);
+router.get("/get/:positionId", auth, getAssessment);
+router.put("/create", auth, createAssessment);
+router.patch("/update/:assessmentId", auth, updateAssessment);
+router.delete("/delete/:assessmentId", auth, deleteAssessment);
 
 module.exports = router;

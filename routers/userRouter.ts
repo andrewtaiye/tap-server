@@ -1,5 +1,6 @@
 import express from "express";
 const router = express.Router();
+const auth = require("../middleware/auth");
 const {
   createUser,
   login,
@@ -9,7 +10,7 @@ const {
 
 router.put("/create", createUser);
 router.post("/login", login);
-router.patch("/update/:userId", updatePassword);
-router.delete("/delete/:userId", deleteUser);
+router.patch("/update/:userId", auth, updatePassword);
+router.delete("/delete/:userId", auth, deleteUser);
 
 module.exports = router;
