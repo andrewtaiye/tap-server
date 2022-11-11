@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const cors = require("cors");
+const create_table = require("./db/seed");
+create_table();
 const app = (0, express_1.default)();
 const userRouter = require("./routers/userRouter");
 const profileRouter = require("./routers/profileRouter");
