@@ -1,6 +1,9 @@
 const client = require("./db");
+const bcrypt = require("bcrypt");
 
 const seed = async (seedAll: boolean) => {
+  let hashedPassword = await bcrypt.hash("123", 12);
+
   let query = `
     INSERT INTO ranks VALUES ('1');
     INSERT INTO flights VALUES ('1');
@@ -86,7 +89,7 @@ const seed = async (seedAll: boolean) => {
           CREATE TABLE IF NOT EXISTS users (
           id uuid PRIMARY KEY DEFAULT uuid_generate_v4() UNIQUE,
           username varchar(20) NOT NULL UNIQUE,
-          password varchar(20) NOT NULL
+          password varchar(60) NOT NULL
           );
       
           CREATE TABLE IF NOT EXISTS positions (
@@ -242,7 +245,7 @@ const seed = async (seedAll: boolean) => {
       `
       BEGIN;
           -- Insert User
-          INSERT INTO users (username, password) VALUES ('user1', '123');
+          INSERT INTO users (username, password) VALUES ('user1', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa');
   
           -- Insert Profile
           INSERT INTO profiles (

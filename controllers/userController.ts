@@ -1,6 +1,7 @@
 require("dotenv").config;
 import { Request, Response } from "express";
 const client = require("../db/db");
+const bcrypt = require("bcrypt");
 const { fetchCall } = require("../utility/utility");
 
 const createUser = async (req: Request, res: Response) => {
@@ -22,18 +23,18 @@ const createUser = async (req: Request, res: Response) => {
       return;
     }
 
+    const hashedPassword = await bcrypt.hash(password, 12);
+
     // Insert into database
     query = `
-      INSERT INTO users (username, password)
-      VALUES ('${username}', '${password}')
-      `;
-    await client.query(query);
+        INSERT INTO users (username, password)
+        VALUES ('${username}', '${hashedPassword}');
 
-    // Retrieve generated User ID
-    query = `SELECT id FROM users WHERE username = '${username}'`;
+        SELECT id FROM users WHERE username = '${username}';
+      `;
     result = await client.query(query);
 
-    const data = { userId: result.rows[0].id };
+    const data = { userId: result[1].rows[0].id };
 
     res.json({
       status: "ok",
@@ -49,7 +50,6 @@ const createUser = async (req: Request, res: Response) => {
 const login = async (req: Request, res: Response) => {
   try {
     const { username, password } = req.body;
-
     // Check if username exists
     let query = `SELECT * FROM users WHERE username = '${username}'`;
     let result = await client.query(query);
@@ -62,7 +62,8 @@ const login = async (req: Request, res: Response) => {
     }
 
     // Check if password matches
-    if (password !== result.rows[0].password) {
+    const match = await bcrypt.compare(password, result.rows[0].password);
+    if (!match) {
       res
         .status(400)
         .json({ status: "error", message: "Invalid Username or Password" });

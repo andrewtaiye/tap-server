@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv").config;
 const client = require("../db/db");
+const bcrypt = require("bcrypt");
 const { fetchCall } = require("../utility/utility");
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -27,16 +28,16 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             res.json({ status: "error", message: "Passwords do not match" });
             return;
         }
+        const hashedPassword = yield bcrypt.hash(password, 12);
         // Insert into database
         query = `
-      INSERT INTO users (username, password)
-      VALUES ('${username}', '${password}')
+        INSERT INTO users (username, password)
+        VALUES ('${username}', '${hashedPassword}');
+
+        SELECT id FROM users WHERE username = '${username}';
       `;
-        yield client.query(query);
-        // Retrieve generated User ID
-        query = `SELECT id FROM users WHERE username = '${username}'`;
         result = yield client.query(query);
-        const data = { userId: result.rows[0].id };
+        const data = { userId: result[1].rows[0].id };
         res.json({
             status: "ok",
             message: "user created",
@@ -61,7 +62,8 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
         // Check if password matches
-        if (password !== result.rows[0].password) {
+        const match = yield bcrypt.compare(password, result.rows[0].password);
+        if (!match) {
             res
                 .status(400)
                 .json({ status: "error", message: "Invalid Username or Password" });
