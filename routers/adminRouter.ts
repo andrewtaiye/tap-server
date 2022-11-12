@@ -10,11 +10,11 @@ const {
   getFlights,
 } = require("../controllers/adminController");
 
-router.get("/get/users", getUsers);
-router.get("/get/user-positions", getUserPositions);
-router.get("/get/ranks", getRanks);
-router.get("/get/positions", getPositions);
-router.get("/get/cats", getCats);
-router.get("/get/flights", getFlights);
+router.get("/get/users", auth, getUsers);
+router.get("/get/user-positions", auth, getUserPositions);
+router.get("/get/ranks", auth, getRanks);
+router.get("/get/positions", auth, getPositions);
+router.get("/get/cats", auth, getCats);
+router.get("/get/flights", auth, getFlights);
 
 module.exports = router;

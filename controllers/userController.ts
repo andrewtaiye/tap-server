@@ -209,7 +209,7 @@ const deleteUser = async (req: Request, res: Response) => {
 const logout = async (req: Request, res: Response) => {
   try {
     const token = req.headers.authorization?.replace("Bearer ", "");
-    const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
+    const decoded = jwt.decode(token, process.env.ACCESS_SECRET);
 
     let query = `DELETE FROM tokens WHERE id = '${decoded.jti}' OR parent_id = '${decoded.jti}';`;
     await client.query(query);

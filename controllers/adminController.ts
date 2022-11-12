@@ -2,16 +2,39 @@ require("dotenv").config;
 import { Request, Response } from "express";
 const client = require("../db/db");
 
-const getUsers = async (req: Request, res: Response) => {
+interface AdminRequest {
+  decoded: {
+    userId: string;
+    is_admin: boolean;
+    hasProfile: boolean;
+    iat: number;
+    exp: number;
+    jti: string;
+  };
+}
+
+const getUsers = async (req: AdminRequest, res: Response) => {
   try {
-    let query = `
+    const { userId: user_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${user_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    query = `
             SELECT id, username, is_admin, profiles.rank, profiles.full_name
             FROM users
             JOIN profiles
             ON users.id = profiles.user_id
             ORDER BY profiles.full_name
         `;
-    let result = await client.query(query);
+    result = await client.query(query);
 
     const users = result.rows;
     const data = { users };

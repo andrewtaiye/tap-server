@@ -13,14 +13,23 @@ require("dotenv").config;
 const client = require("../db/db");
 const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let query = `
+        const { userId: user_id } = req.decoded;
+        let query = `SELECT is_admin FROM users WHERE id = '${user_id}';`;
+        let result = yield client.query(query);
+        if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+            res
+                .status(400)
+                .json({ status: "error", message: "User not authenticated" });
+            return;
+        }
+        query = `
             SELECT id, username, is_admin, profiles.rank, profiles.full_name
             FROM users
             JOIN profiles
             ON users.id = profiles.user_id
             ORDER BY profiles.full_name
         `;
-        let result = yield client.query(query);
+        result = yield client.query(query);
         const users = result.rows;
         const data = { users };
         console.log("Retrieved users");

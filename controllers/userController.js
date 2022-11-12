@@ -189,7 +189,7 @@ const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
         const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.replace("Bearer ", "");
-        const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
+        const decoded = jwt.decode(token, process.env.ACCESS_SECRET);
         let query = `DELETE FROM tokens WHERE id = '${decoded.jti}' OR parent_id = '${decoded.jti}';`;
         yield client.query(query);
         console.log("Cleared tokens, logging out");
