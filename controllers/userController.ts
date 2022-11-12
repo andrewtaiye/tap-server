@@ -78,6 +78,7 @@ const login = async (req: Request, res: Response) => {
 
     const payload = {
       userId: result.rows[0].id,
+      is_admin: result.rows[0].is_admin,
       hasProfile: true,
     };
 

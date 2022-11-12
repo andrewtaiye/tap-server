@@ -76,6 +76,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         let response = yield fetchCall(url);
         const payload = {
             userId: result.rows[0].id,
+            is_admin: result.rows[0].is_admin,
             hasProfile: true,
         };
         if (response.status !== "ok") {

@@ -45,6 +45,7 @@ router.post("/refresh", (req, res) => __awaiter(void 0, void 0, void 0, function
         const decoded = jwt.verify(refresh, process.env.REFRESH_SECRET);
         const payload = {
             userId: decoded.userId,
+            is_admin: decoded.is_admin,
             hasProfile: decoded.hasProfile,
         };
         const accessId = uuidv4();
