@@ -110,7 +110,7 @@ const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     `;
         yield client.query(query);
         // Update user password
-        let url = `http://127.0.0.1:5001/user/update/${user_id}`;
+        let url = process.env.REACT_APP_API_ENDPOINT + `user/update/${user_id}`;
         let response = yield fetchCall(url, "PATCH", {
             password,
             confirm_password,

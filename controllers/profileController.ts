@@ -135,7 +135,7 @@ const updateProfile = async (req: Request, res: Response) => {
     await client.query(query);
 
     // Update user password
-    let url = `http://127.0.0.1:5001/user/update/${user_id}`;
+    let url = process.env.REACT_APP_API_ENDPOINT + `user/update/${user_id}`;
     let response = await fetchCall(url, "PATCH", {
       password,
       confirm_password,

@@ -72,7 +72,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
         // Check if profile exists
-        let url = `http://127.0.0.1:5001/profile/get/${result.rows[0].id}`;
+        let url = process.env.REACT_APP_API_ENDPOINT + `profile/get/${result.rows[0].id}`;
         let response = yield fetchCall(url);
         const payload = {
             userId: result.rows[0].id,

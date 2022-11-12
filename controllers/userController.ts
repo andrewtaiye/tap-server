@@ -73,7 +73,8 @@ const login = async (req: Request, res: Response) => {
     }
 
     // Check if profile exists
-    let url = `http://127.0.0.1:5001/profile/get/${result.rows[0].id}`;
+    let url =
+      process.env.REACT_APP_API_ENDPOINT + `profile/get/${result.rows[0].id}`;
     let response = await fetchCall(url);
 
     const payload = {
