@@ -96,7 +96,8 @@ const seed = (seedAll) => __awaiter(void 0, void 0, void 0, function* () {
           CREATE TABLE IF NOT EXISTS users (
           id uuid PRIMARY KEY DEFAULT uuid_generate_v4() UNIQUE,
           username varchar(20) NOT NULL UNIQUE,
-          password varchar(60) NOT NULL
+          password varchar(60) NOT NULL,
+          is_admin boolean NOT NULL DEFAULT false
           );
       
           CREATE TABLE IF NOT EXISTS positions (
@@ -243,7 +244,7 @@ const seed = (seedAll) => __awaiter(void 0, void 0, void 0, function* () {
         yield client.query(`
       BEGIN;
           -- Insert User
-          INSERT INTO users (username, password) VALUES ('user1', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa');
+          INSERT INTO users (username, password, is_admin) VALUES ('user1', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', true);
   
           -- Insert Profile
           INSERT INTO profiles (
