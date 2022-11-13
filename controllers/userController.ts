@@ -148,7 +148,9 @@ const updatePassword = async (req: Request, res: Response) => {
     }
 
     // Update password
-    query = `UPDATE users SET password = '${password}' WHERE id = '${id}';`;
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    query = `UPDATE users SET password = '${hashedPassword}' WHERE id = '${id}';`;
     await client.query(query);
 
     console.log("Password updated");

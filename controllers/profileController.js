@@ -81,6 +81,7 @@ const createProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const { date_of_birth, id_number, date_accepted, reporting_date, flight, cat, password, confirm_password, } = req.body;
         const { userId: user_id } = req.params;
@@ -110,8 +111,9 @@ const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     `;
         yield client.query(query);
         // Update user password
+        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.replace("Bearer ", "");
         let url = process.env.REACT_APP_API_ENDPOINT + `user/update/${user_id}`;
-        let response = yield fetchCall(url, "PATCH", {
+        let response = yield fetchCall(url, token, "PATCH", {
             password,
             confirm_password,
         });

@@ -135,8 +135,10 @@ const updateProfile = async (req: Request, res: Response) => {
     await client.query(query);
 
     // Update user password
+    const token = req.headers.authorization?.replace("Bearer ", "");
+
     let url = process.env.REACT_APP_API_ENDPOINT + `user/update/${user_id}`;
-    let response = await fetchCall(url, "PATCH", {
+    let response = await fetchCall(url, token, "PATCH", {
       password,
       confirm_password,
     });

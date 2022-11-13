@@ -8,6 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.fetchCall = void 0;
 const capitaliseFirstLetter = (string) => {
     const words = string.split(/ |-/);
     const newWords = [];
@@ -18,16 +20,20 @@ const capitaliseFirstLetter = (string) => {
     }
     return newWords.join(" ");
 };
-const fetchCall = (url, method = "GET", body = null) => __awaiter(void 0, void 0, void 0, function* () {
+const fetchCall = (url, header = "", method = "GET", body = null) => __awaiter(void 0, void 0, void 0, function* () {
     const res = yield fetch(url, {
         method: method,
         body: body === null ? null : JSON.stringify(body),
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + header,
+        },
     });
     const response = yield res.json();
     return response;
 });
+exports.fetchCall = fetchCall;
 module.exports = {
     capitaliseFirstLetter,
-    fetchCall,
+    fetchCall: exports.fetchCall,
 };

@@ -9,15 +9,19 @@ const capitaliseFirstLetter = (string: string): string => {
   return newWords.join(" ");
 };
 
-const fetchCall = async (
+export const fetchCall = async (
   url: string,
+  header: string = "",
   method: string = "GET",
   body: any = null
 ) => {
   const res = await fetch(url, {
     method: method,
     body: body === null ? null : JSON.stringify(body),
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + header,
+    },
   });
 
   const response = await res.json();

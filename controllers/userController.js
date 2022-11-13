@@ -135,7 +135,8 @@ const updatePassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
             return;
         }
         // Update password
-        query = `UPDATE users SET password = '${password}' WHERE id = '${id}';`;
+        const hashedPassword = yield bcrypt.hash(password, 12);
+        query = `UPDATE users SET password = '${hashedPassword}' WHERE id = '${id}';`;
         yield client.query(query);
         console.log("Password updated");
         res.json({ status: "ok", message: "Password updated" });
