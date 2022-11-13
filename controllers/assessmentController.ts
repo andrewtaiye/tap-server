@@ -7,7 +7,10 @@ const getAssessment = async (req: Request, res: Response) => {
     const { positionId: user_position_id } = req.params;
 
     // Retrieve assessments
-    let query = `SELECT * FROM assessments WHERE user_position_id = '${user_position_id}';`;
+    let query = `
+      SELECT * FROM assessments WHERE user_position_id = '${user_position_id}'
+      ORDER BY date, assessment_number;
+    `;
     let result = await client.query(query);
 
     // Retrieved but no assessments
