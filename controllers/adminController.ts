@@ -11,10 +11,12 @@ interface AdminRequest {
     exp: number;
     jti: string;
   };
+  newToken: string;
 }
 
 const getUsers = async (req: AdminRequest, res: Response) => {
   try {
+    // Check if user is admin
     const { userId: user_id } = req.decoded;
 
     let query = `SELECT is_admin FROM users WHERE id = '${user_id}';`;
@@ -27,6 +29,7 @@ const getUsers = async (req: AdminRequest, res: Response) => {
       return;
     }
 
+    // Get Users
     query = `
             SELECT id, username, is_admin, profiles.rank, profiles.full_name
             FROM users
@@ -37,7 +40,11 @@ const getUsers = async (req: AdminRequest, res: Response) => {
     result = await client.query(query);
 
     const users = result.rows;
-    const data = { users };
+    const data: { users: any; access?: string } = { users };
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
 
     console.log("Retrieved users");
     res.json({ status: "ok", message: "Retrieved users", data });
@@ -47,19 +54,36 @@ const getUsers = async (req: AdminRequest, res: Response) => {
   }
 };
 
-const getUserPositions = async (req: Request, res: Response) => {
+const getUserPositions = async (req: AdminRequest, res: Response) => {
   try {
-    let query = `
+    // Check if user is admin
+    const { userId: user_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${user_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+    // Get User Positions
+    query = `
             SELECT id, position, approval_date, is_instructor, profiles.rank, profiles.full_name
             FROM user_positions
             JOIN profiles
             ON user_positions.user_id = profiles.user_id
             ORDER BY profiles.full_name
         `;
-    let result = await client.query(query);
+    result = await client.query(query);
 
     const userPositions = result.rows;
-    const data = { userPositions };
+    const data: { userPositions: any; access?: string } = { userPositions };
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
 
     console.log("Retrieved user positions");
     res.json({ status: "ok", message: "Retrieved user positions", data });
@@ -71,21 +95,39 @@ const getUserPositions = async (req: Request, res: Response) => {
   }
 };
 
-const getRanks = async (req: Request, res: Response) => {
+const getRanks = async (req: AdminRequest, res: Response) => {
   try {
-    let query = `
+    // Check if user is admin
+    const { userId: user_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${user_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    // Get Ranks
+    query = `
             SELECT *
             FROM ranks
             ORDER BY ranks
         `;
-    let result = await client.query(query);
+    result = await client.query(query);
 
     const ranks: string[] = [];
     for (const row of result.rows) {
       ranks.push(row.ranks);
     }
 
-    const data = { ranks };
+    const data: { ranks: any; access?: string } = { ranks };
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
 
     console.log("Retrieved ranks");
     res.json({ status: "ok", message: "Retrieved ranks", data });
@@ -95,21 +137,39 @@ const getRanks = async (req: Request, res: Response) => {
   }
 };
 
-const getPositions = async (req: Request, res: Response) => {
+const getPositions = async (req: AdminRequest, res: Response) => {
   try {
-    let query = `
+    // Check if user is admin
+    const { userId: user_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${user_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    // Get Positions
+    query = `
               SELECT *
               FROM positions
               ORDER BY positions
           `;
-    let result = await client.query(query);
+    result = await client.query(query);
 
     const positions: string[] = [];
     for (const row of result.rows) {
       positions.push(row.positions);
     }
 
-    const data = { positions };
+    const data: { positions: any; access?: string } = { positions };
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
 
     console.log("Retrieved positions");
     res.json({ status: "ok", message: "Retrieved positions", data });
@@ -121,21 +181,39 @@ const getPositions = async (req: Request, res: Response) => {
   }
 };
 
-const getCats = async (req: Request, res: Response) => {
+const getCats = async (req: AdminRequest, res: Response) => {
   try {
-    let query = `
+    // Check if user is admin
+    const { userId: user_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${user_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    // Get CATs
+    query = `
             SELECT *
             FROM cats
             ORDER BY cats
         `;
-    let result = await client.query(query);
+    result = await client.query(query);
 
     const cats: string[] = [];
     for (const row of result.rows) {
       cats.push(row.cats);
     }
 
-    const data = { cats };
+    const data: { cats: any; access?: string } = { cats };
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
 
     console.log("Retrieved CATs");
     res.json({ status: "ok", message: "Retrieved CATs", data });
@@ -145,27 +223,69 @@ const getCats = async (req: Request, res: Response) => {
   }
 };
 
-const getFlights = async (req: Request, res: Response) => {
+const getFlights = async (req: AdminRequest, res: Response) => {
   try {
-    let query = `
+    // Check if user is admin
+    const { userId: user_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${user_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    // Get Flights
+    query = `
             SELECT *
             FROM flights
             ORDER BY flights
         `;
-    let result = await client.query(query);
+    result = await client.query(query);
 
     const flights: string[] = [];
     for (const row of result.rows) {
       flights.push(row.flights);
     }
 
-    const data = { flights };
+    const data: { flights: any; access?: string } = { flights };
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
 
     console.log("Retrieved Flights");
     res.json({ status: "ok", message: "Retrieved Flights", data });
   } catch (err: any) {
     console.log(err);
     res.status(400).json({ status: "error", message: "Failed to get Flights" });
+  }
+};
+
+const updateUsers = async (req: AdminRequest, res: Response) => {
+  try {
+    // TODO: Finish update and delete, copy over to the rest of the tables
+
+    // Check if user is admin
+    const { userId: user_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${user_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+  } catch (err: any) {
+    console.log(err);
+    res
+      .status(400)
+      .json({ status: "error", message: "Failed to update Users" });
   }
 };
 
@@ -176,4 +296,5 @@ module.exports = {
   getPositions,
   getCats,
   getFlights,
+  updateUsers,
 };
