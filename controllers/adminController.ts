@@ -300,6 +300,115 @@ const createRank = async (req: AdminRequest, res: Response) => {
   }
 };
 
+const createPosition = async (req: AdminRequest, res: Response) => {
+  try {
+    // Check if user is admin
+    const { userId: admin_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    // Insert New Position
+    const { position } = req.body;
+
+    query = `INSERT INTO positions VALUES ('${position}');`;
+    await client.query(query);
+
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("Position created");
+    res.json({ status: "ok", message: "Position created", data });
+  } catch (err: any) {
+    console.log("Error: Failed to create position");
+    res
+      .status(400)
+      .json({ status: "error", message: "Failed to create position" });
+  }
+};
+
+const createCat = async (req: AdminRequest, res: Response) => {
+  try {
+    // Check if user is admin
+    const { userId: admin_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    // Insert New CAT
+    const { cat } = req.body;
+
+    query = `INSERT INTO cats VALUES ('${cat}');`;
+    await client.query(query);
+
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("CAT created");
+    res.json({ status: "ok", message: "CAT created", data });
+  } catch (err: any) {
+    console.log("Error: Failed to create CAT");
+    res.status(400).json({ status: "error", message: "Failed to create CAT" });
+  }
+};
+
+const createFlight = async (req: AdminRequest, res: Response) => {
+  try {
+    // Check if user is admin
+    const { userId: admin_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    // Insert New Flight
+    const { flight } = req.body;
+
+    query = `INSERT INTO flights VALUES ('${flight}');`;
+    await client.query(query);
+
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("Flight created");
+    res.json({ status: "ok", message: "Flight created", data });
+  } catch (err: any) {
+    console.log("Error: Failed to create flight");
+    res
+      .status(400)
+      .json({ status: "error", message: "Failed to create flight" });
+  }
+};
+
 const updateUser = async (req: AdminRequest, res: Response) => {
   try {
     // Check if user is admin
@@ -448,9 +557,131 @@ const updateRank = async (req: AdminRequest, res: Response) => {
     res.json({ status: "ok", message: "Rank updated", data });
   } catch (err: any) {
     console.log(err);
+    res.status(400).json({ status: "error", message: "Failed to update rank" });
+  }
+};
+
+const updatePosition = async (req: AdminRequest, res: Response) => {
+  try {
+    // Check if user is admin
+    const { userId: admin_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    const { position } = req.params;
+    const { newPosition } = req.body;
+
+    // Update position
+    query = `
+      UPDATE positions
+      SET positions = '${newPosition}'
+      WHERE positions = '${position}';
+    `;
+    await client.query(query);
+
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("Position Updated");
+    res.json({ status: "ok", message: "Position updated", data });
+  } catch (err: any) {
+    console.log(err);
     res
       .status(400)
-      .json({ status: "error", message: "Failed to update user position" });
+      .json({ status: "error", message: "Failed to update position" });
+  }
+};
+
+const updateCat = async (req: AdminRequest, res: Response) => {
+  try {
+    // Check if user is admin
+    const { userId: admin_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    const { cat } = req.params;
+    const { newCat } = req.body;
+
+    // Update cat
+    query = `
+      UPDATE cats
+      SET cats = '${newCat}'
+      WHERE cats = '${cat}';
+    `;
+    await client.query(query);
+
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("CAT Updated");
+    res.json({ status: "ok", message: "CAT updated", data });
+  } catch (err: any) {
+    console.log(err);
+    res.status(400).json({ status: "error", message: "Failed to update cat" });
+  }
+};
+
+const updateFlight = async (req: AdminRequest, res: Response) => {
+  try {
+    // Check if user is admin
+    const { userId: admin_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    const { flight } = req.params;
+    const { newFlight } = req.body;
+
+    // Update flight
+    query = `
+      UPDATE flights
+      SET flights = '${newFlight}'
+      WHERE flights = '${flight}';
+    `;
+    await client.query(query);
+
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("Flight Updated");
+    res.json({ status: "ok", message: "Flight updated", data });
+  } catch (err: any) {
+    console.log(err);
+    res
+      .status(400)
+      .json({ status: "error", message: "Failed to update flight" });
   }
 };
 
@@ -563,7 +794,7 @@ const deleteRank = async (req: AdminRequest, res: Response) => {
 
     const { rank } = req.params;
 
-    // Delete User_Positions, Assessments
+    // Delete rank
     query = `
       DELETE FROM ranks WHERE ranks = '${rank}';
     `;
@@ -583,6 +814,121 @@ const deleteRank = async (req: AdminRequest, res: Response) => {
   }
 };
 
+const deletePosition = async (req: AdminRequest, res: Response) => {
+  try {
+    // Check if user is admin
+    const { userId: admin_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    const { position } = req.params;
+
+    // Delete position
+    query = `
+      DELETE FROM positions WHERE positions = '${position}';
+    `;
+    await client.query(query);
+
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("Position deleted");
+    res.json({ status: "ok", message: "Position deleted", data });
+  } catch (err: any) {
+    console.log("Error: Failed to delete position");
+    res
+      .status(400)
+      .json({ status: "error", message: "Failed to delete position" });
+  }
+};
+
+const deleteCat = async (req: AdminRequest, res: Response) => {
+  try {
+    // Check if user is admin
+    const { userId: admin_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    const { cat } = req.params;
+
+    // Delete cat
+    query = `
+      DELETE FROM cats WHERE cats = '${cat}';
+    `;
+    await client.query(query);
+
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("CAT deleted");
+    res.json({ status: "ok", message: "CAT deleted", data });
+  } catch (err: any) {
+    console.log("Error: Failed to delete CAT");
+    res.status(400).json({ status: "error", message: "Failed to delete CAT" });
+  }
+};
+
+const deleteFlight = async (req: AdminRequest, res: Response) => {
+  try {
+    // Check if user is admin
+    const { userId: admin_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    const { flight } = req.params;
+
+    // Delete flight
+    query = `
+      DELETE FROM flights WHERE flights = '${flight}';
+    `;
+    await client.query(query);
+
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("Flight deleted");
+    res.json({ status: "ok", message: "Flight deleted", data });
+  } catch (err: any) {
+    console.log("Error: Failed to delete flight");
+    res
+      .status(400)
+      .json({ status: "error", message: "Failed to delete flight" });
+  }
+};
+
 module.exports = {
   getUsers,
   getUserPositions,
@@ -591,10 +937,19 @@ module.exports = {
   getCats,
   getFlights,
   createRank,
+  createPosition,
+  createCat,
+  createFlight,
   updateUser,
   updateUserPosition,
   updateRank,
+  updatePosition,
+  updateCat,
+  updateFlight,
   deleteUser,
   deleteUserPosition,
   deleteRank,
+  deletePosition,
+  deleteCat,
+  deleteFlight,
 };
