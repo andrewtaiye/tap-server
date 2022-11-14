@@ -40,7 +40,8 @@ const getProfile = async (req: ProfileRequest, res: Response) => {
       return;
     }
 
-    const data = result.rows[0];
+    const profile = result.rows[0];
+    const data = { profile };
 
     res.json({ status: "ok", message: "Profile retrieved", data });
   } catch (err: any) {

@@ -40,7 +40,8 @@ const getProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 .json({ status: "error", message: "Failed to retrieve profile" });
             return;
         }
-        const data = result.rows[0];
+        const profile = result.rows[0];
+        const data = { profile };
         res.json({ status: "ok", message: "Profile retrieved", data });
     }
     catch (err) {
