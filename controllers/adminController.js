@@ -14,8 +14,8 @@ const client = require("../db/db");
 const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Check if user is admin
-        const { userId: user_id } = req.decoded;
-        let query = `SELECT is_admin FROM users WHERE id = '${user_id}';`;
+        const { userId: admin_id } = req.decoded;
+        let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
         let result = yield client.query(query);
         if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
             res
@@ -48,8 +48,8 @@ const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 const getUserPositions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Check if user is admin
-        const { userId: user_id } = req.decoded;
-        let query = `SELECT is_admin FROM users WHERE id = '${user_id}';`;
+        const { userId: admin_id } = req.decoded;
+        let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
         let result = yield client.query(query);
         if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
             res
@@ -84,8 +84,8 @@ const getUserPositions = (req, res) => __awaiter(void 0, void 0, void 0, functio
 const getRanks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Check if user is admin
-        const { userId: user_id } = req.decoded;
-        let query = `SELECT is_admin FROM users WHERE id = '${user_id}';`;
+        const { userId: admin_id } = req.decoded;
+        let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
         let result = yield client.query(query);
         if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
             res
@@ -119,8 +119,8 @@ const getRanks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 const getPositions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Check if user is admin
-        const { userId: user_id } = req.decoded;
-        let query = `SELECT is_admin FROM users WHERE id = '${user_id}';`;
+        const { userId: admin_id } = req.decoded;
+        let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
         let result = yield client.query(query);
         if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
             res
@@ -156,8 +156,8 @@ const getPositions = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 const getCats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Check if user is admin
-        const { userId: user_id } = req.decoded;
-        let query = `SELECT is_admin FROM users WHERE id = '${user_id}';`;
+        const { userId: admin_id } = req.decoded;
+        let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
         let result = yield client.query(query);
         if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
             res
@@ -191,8 +191,8 @@ const getCats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 const getFlights = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Check if user is admin
-        const { userId: user_id } = req.decoded;
-        let query = `SELECT is_admin FROM users WHERE id = '${user_id}';`;
+        const { userId: admin_id } = req.decoded;
+        let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
         let result = yield client.query(query);
         if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
             res
@@ -223,12 +223,11 @@ const getFlights = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(400).json({ status: "error", message: "Failed to get Flights" });
     }
 });
-const updateUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // TODO: Finish update and delete, copy over to the rest of the tables
         // Check if user is admin
-        const { userId: user_id } = req.decoded;
-        let query = `SELECT is_admin FROM users WHERE id = '${user_id}';`;
+        const { userId: admin_id } = req.decoded;
+        let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
         let result = yield client.query(query);
         if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
             res
@@ -236,6 +235,77 @@ const updateUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 .json({ status: "error", message: "User not authenticated" });
             return;
         }
+        const { userId: user_id } = req.params;
+        const { rank, full_name, username, password, is_admin } = req.body;
+        // Update User Profile in table Users and Profiles
+        query = `
+      UPDATE users
+      SET username = '${username}', is_admin = ${is_admin} ${password !== "" ? `, password = '${password}'` : ""}
+      WHERE id = '${user_id}'
+      RETURNING username, is_admin;
+
+      UPDATE profiles
+      SET rank = '${rank}', full_name = '${full_name}'
+      WHERE user_id = '${user_id}'
+      RETURNING rank, full_name;
+    `;
+        result = yield client.query(query);
+        const user = {
+            rank: result[1].rows[0].rank,
+            full_name: result[1].rows[0].full_name,
+            username: result[0].rows[0].username,
+            is_admin: result[0].rows[0].is_admin,
+        };
+        const data = { user };
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
+        console.log("User Updated");
+        res.json({ status: "ok", message: "User updated", data });
+    }
+    catch (err) {
+        console.log(err);
+        res
+            .status(400)
+            .json({ status: "error", message: "Failed to update Users" });
+    }
+});
+const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Check if user is admin
+        const { userId: admin_id } = req.decoded;
+        let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+        let result = yield client.query(query);
+        if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+            res
+                .status(400)
+                .json({ status: "error", message: "User not authenticated" });
+            return;
+        }
+        const { userId: user_id } = req.params;
+        // Retrieve user_position ID
+        query = `SELECT id FROM user_positions WHERE user_id = '${user_id}';`;
+        result = yield client.query(query);
+        let user_position_delete_query = "";
+        for (const position of result.rows) {
+            user_position_delete_query += `DELETE FROM assessments WHERE user_position_id = '${position.id}';`;
+        }
+        // Delete User, Profile, User_Positions, Assessments
+        query = `
+      BEGIN;
+        ${user_position_delete_query}
+        DELETE FROM user_positions WHERE user_id = '${user_id}';
+        DELETE FROM profiles WHERE user_id = '${user_id}';
+        DELETE FROM users WHERE id = '${user_id}';
+      COMMIT;
+    `;
+        yield client.query(query);
+        const data = {};
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
+        console.log("User Deleted");
+        res.json({ status: "ok", message: "User deleted", data });
     }
     catch (err) {
         console.log(err);
@@ -251,5 +321,6 @@ module.exports = {
     getPositions,
     getCats,
     getFlights,
-    updateUsers,
+    updateUser,
+    deleteUser,
 };
