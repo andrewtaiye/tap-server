@@ -2,7 +2,7 @@ require("dotenv").config;
 import { Request, Response } from "express";
 const client = require("../db/db");
 
-interface AdminRequest {
+interface AdminRequest extends Request {
   decoded: {
     userId: string;
     is_admin: boolean;
@@ -12,8 +12,6 @@ interface AdminRequest {
     jti: string;
   };
   newToken: string;
-  params?: any;
-  body?: any;
 }
 
 const getUsers = async (req: AdminRequest, res: Response) => {
@@ -263,7 +261,42 @@ const getFlights = async (req: AdminRequest, res: Response) => {
     res.json({ status: "ok", message: "Retrieved Flights", data });
   } catch (err: any) {
     console.log(err);
-    res.status(400).json({ status: "error", message: "Failed to get Flights" });
+    res.status(400).json({ status: "error", message: "Failed to get flights" });
+  }
+};
+
+const createRank = async (req: AdminRequest, res: Response) => {
+  try {
+    // Check if user is admin
+    const { userId: admin_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    // Insert New Rank
+    const { rank } = req.body;
+
+    query = `INSERT INTO ranks VALUES ('${rank}');`;
+    await client.query(query);
+
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("Rank created");
+    res.json({ status: "ok", message: "Rank created", data });
+  } catch (err: any) {
+    console.log("Error: Failed to create rank");
+    res.status(400).json({ status: "error", message: "Failed to create rank" });
   }
 };
 
@@ -282,8 +315,8 @@ const updateUser = async (req: AdminRequest, res: Response) => {
       return;
     }
 
-    const { userId: user_id } = req.params!;
-    const { rank, full_name, username, password, is_admin } = req.body!;
+    const { userId: user_id } = req.params;
+    const { rank, full_name, username, password, is_admin } = req.body;
 
     // Update User Profile in table Users and Profiles
     query = `
@@ -342,8 +375,8 @@ const updateUserPosition = async (req: AdminRequest, res: Response) => {
       return;
     }
 
-    const { positionId: id } = req.params!;
-    const { position, approval_date, is_instructor } = req.body!;
+    const { positionId: id } = req.params;
+    const { position, approval_date, is_instructor } = req.body;
 
     // Update User Position
     query = `
@@ -369,11 +402,55 @@ const updateUserPosition = async (req: AdminRequest, res: Response) => {
       data.access = req.newToken;
     }
 
-    console.log("User Updated");
-    res.json({ status: "ok", message: "User updated", data });
+    console.log("User position Updated");
+    res.json({ status: "ok", message: "User position updated", data });
   } catch (err: any) {
     console.log(err);
-    res.status(400).json({ status: "error", message: "Failed to update user" });
+    res
+      .status(400)
+      .json({ status: "error", message: "Failed to update user position" });
+  }
+};
+
+const updateRank = async (req: AdminRequest, res: Response) => {
+  try {
+    // Check if user is admin
+    const { userId: admin_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    const { rank } = req.params;
+    const { newRank } = req.body;
+
+    // Update rank
+    query = `
+      UPDATE ranks
+      SET ranks = '${newRank}'
+      WHERE ranks = '${rank}';
+    `;
+    await client.query(query);
+
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("Rank Updated");
+    res.json({ status: "ok", message: "Rank updated", data });
+  } catch (err: any) {
+    console.log(err);
+    res
+      .status(400)
+      .json({ status: "error", message: "Failed to update user position" });
   }
 };
 
@@ -392,7 +469,7 @@ const deleteUser = async (req: AdminRequest, res: Response) => {
       return;
     }
 
-    const { userId: user_id } = req.params!;
+    const { userId: user_id } = req.params;
 
     // Retrieve user_position ID
     query = `SELECT id FROM user_positions WHERE user_id = '${user_id}';`;
@@ -425,9 +502,7 @@ const deleteUser = async (req: AdminRequest, res: Response) => {
     res.json({ status: "ok", message: "User deleted", data });
   } catch (err: any) {
     console.log(err);
-    res
-      .status(400)
-      .json({ status: "error", message: "Failed to update Users" });
+    res.status(400).json({ status: "error", message: "Failed to delete user" });
   }
 };
 
@@ -446,7 +521,7 @@ const deleteUserPosition = async (req: AdminRequest, res: Response) => {
       return;
     }
 
-    const { positionId: id } = req.params!;
+    const { positionId: id } = req.params;
 
     // Delete User_Positions, Assessments
     query = `
@@ -461,13 +536,50 @@ const deleteUserPosition = async (req: AdminRequest, res: Response) => {
       data.access = req.newToken;
     }
 
-    console.log("User Deleted");
+    console.log("User position deleted");
     res.json({ status: "ok", message: "User position deleted", data });
   } catch (err: any) {
     console.log(err);
     res
       .status(400)
       .json({ status: "error", message: "Failed to delete user position" });
+  }
+};
+
+const deleteRank = async (req: AdminRequest, res: Response) => {
+  try {
+    // Check if user is admin
+    const { userId: admin_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    const { rank } = req.params;
+
+    // Delete User_Positions, Assessments
+    query = `
+      DELETE FROM ranks WHERE ranks = '${rank}';
+    `;
+    await client.query(query);
+
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("Rank deleted");
+    res.json({ status: "ok", message: "Rank deleted", data });
+  } catch (err: any) {
+    console.log("Error: Failed to delete rank");
+    res.status(400).json({ status: "error", message: "Failed to delete rank" });
   }
 };
 
@@ -478,8 +590,11 @@ module.exports = {
   getPositions,
   getCats,
   getFlights,
+  createRank,
   updateUser,
   updateUserPosition,
+  updateRank,
   deleteUser,
   deleteUserPosition,
+  deleteRank,
 };

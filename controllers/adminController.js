@@ -220,7 +220,35 @@ const getFlights = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
     catch (err) {
         console.log(err);
-        res.status(400).json({ status: "error", message: "Failed to get Flights" });
+        res.status(400).json({ status: "error", message: "Failed to get flights" });
+    }
+});
+const createRank = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Check if user is admin
+        const { userId: admin_id } = req.decoded;
+        let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+        let result = yield client.query(query);
+        if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+            res
+                .status(400)
+                .json({ status: "error", message: "User not authenticated" });
+            return;
+        }
+        // Insert New Rank
+        const { rank } = req.body;
+        query = `INSERT INTO ranks VALUES ('${rank}');`;
+        yield client.query(query);
+        const data = {};
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
+        console.log("Rank created");
+        res.json({ status: "ok", message: "Rank created", data });
+    }
+    catch (err) {
+        console.log("Error: Failed to create rank");
+        res.status(400).json({ status: "error", message: "Failed to create rank" });
     }
 });
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -312,12 +340,49 @@ const updateUserPosition = (req, res) => __awaiter(void 0, void 0, void 0, funct
         if (req.newToken) {
             data.access = req.newToken;
         }
-        console.log("User Updated");
-        res.json({ status: "ok", message: "User updated", data });
+        console.log("User position Updated");
+        res.json({ status: "ok", message: "User position updated", data });
     }
     catch (err) {
         console.log(err);
-        res.status(400).json({ status: "error", message: "Failed to update user" });
+        res
+            .status(400)
+            .json({ status: "error", message: "Failed to update user position" });
+    }
+});
+const updateRank = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Check if user is admin
+        const { userId: admin_id } = req.decoded;
+        let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+        let result = yield client.query(query);
+        if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+            res
+                .status(400)
+                .json({ status: "error", message: "User not authenticated" });
+            return;
+        }
+        const { rank } = req.params;
+        const { newRank } = req.body;
+        // Update rank
+        query = `
+      UPDATE ranks
+      SET ranks = '${newRank}'
+      WHERE ranks = '${rank}';
+    `;
+        yield client.query(query);
+        const data = {};
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
+        console.log("Rank Updated");
+        res.json({ status: "ok", message: "Rank updated", data });
+    }
+    catch (err) {
+        console.log(err);
+        res
+            .status(400)
+            .json({ status: "error", message: "Failed to update user position" });
     }
 });
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -359,9 +424,7 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
     catch (err) {
         console.log(err);
-        res
-            .status(400)
-            .json({ status: "error", message: "Failed to update Users" });
+        res.status(400).json({ status: "error", message: "Failed to delete user" });
     }
 });
 const deleteUserPosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -387,7 +450,7 @@ const deleteUserPosition = (req, res) => __awaiter(void 0, void 0, void 0, funct
         if (req.newToken) {
             data.access = req.newToken;
         }
-        console.log("User Deleted");
+        console.log("User position deleted");
         res.json({ status: "ok", message: "User position deleted", data });
     }
     catch (err) {
@@ -397,6 +460,36 @@ const deleteUserPosition = (req, res) => __awaiter(void 0, void 0, void 0, funct
             .json({ status: "error", message: "Failed to delete user position" });
     }
 });
+const deleteRank = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Check if user is admin
+        const { userId: admin_id } = req.decoded;
+        let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+        let result = yield client.query(query);
+        if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+            res
+                .status(400)
+                .json({ status: "error", message: "User not authenticated" });
+            return;
+        }
+        const { rank } = req.params;
+        // Delete User_Positions, Assessments
+        query = `
+      DELETE FROM ranks WHERE ranks = '${rank}';
+    `;
+        yield client.query(query);
+        const data = {};
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
+        console.log("Rank deleted");
+        res.json({ status: "ok", message: "Rank deleted", data });
+    }
+    catch (err) {
+        console.log("Error: Failed to delete rank");
+        res.status(400).json({ status: "error", message: "Failed to delete rank" });
+    }
+});
 module.exports = {
     getUsers,
     getUserPositions,
@@ -404,8 +497,11 @@ module.exports = {
     getPositions,
     getCats,
     getFlights,
+    createRank,
     updateUser,
     updateUserPosition,
+    updateRank,
     deleteUser,
     deleteUserPosition,
+    deleteRank,
 };
