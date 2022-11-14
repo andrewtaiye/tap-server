@@ -255,14 +255,12 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         SET rank = '${rank}', full_name = '${full_name}'
         WHERE user_id = '${user_id}'
         RETURNING rank, full_name;
-
-        ROLLBACK TO updated_user;
       COMMIT;
     `;
         result = yield client.query(query);
         const user = {
-            rank: (_a = result[4].rows[0]) === null || _a === void 0 ? void 0 : _a.rank,
-            full_name: (_b = result[4].rows[0]) === null || _b === void 0 ? void 0 : _b.full_name,
+            rank: (_a = result[3].rows[0]) === null || _a === void 0 ? void 0 : _a.rank,
+            full_name: (_b = result[3].rows[0]) === null || _b === void 0 ? void 0 : _b.full_name,
             id: result[1].rows[0].id,
             username: result[1].rows[0].username,
             is_admin: result[1].rows[0].is_admin,

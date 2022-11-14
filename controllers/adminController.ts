@@ -302,14 +302,12 @@ const updateUser = async (req: AdminRequest, res: Response) => {
         SET rank = '${rank}', full_name = '${full_name}'
         WHERE user_id = '${user_id}'
         RETURNING rank, full_name;
-
-        ROLLBACK TO updated_user;
       COMMIT;
     `;
     result = await client.query(query);
     const user = {
-      rank: result[4].rows[0]?.rank,
-      full_name: result[4].rows[0]?.full_name,
+      rank: result[3].rows[0]?.rank,
+      full_name: result[3].rows[0]?.full_name,
       id: result[1].rows[0].id,
       username: result[1].rows[0].username,
       is_admin: result[1].rows[0].is_admin,
