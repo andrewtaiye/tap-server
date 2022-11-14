@@ -35,7 +35,7 @@ const getUsers = async (req: AdminRequest, res: Response) => {
     query = `
             SELECT id, username, is_admin, profiles.rank, profiles.full_name
             FROM users
-            JOIN profiles
+            LEFT JOIN profiles
             ON users.id = profiles.user_id
             ORDER BY profiles.full_name
         `;
@@ -287,25 +287,32 @@ const updateUser = async (req: AdminRequest, res: Response) => {
 
     // Update User Profile in table Users and Profiles
     query = `
-      UPDATE users
-      SET username = '${username}', is_admin = ${is_admin} ${
-      password !== "" ? `, password = '${password}'` : ""
-    }
-      WHERE id = '${user_id}'
-      RETURNING username, is_admin;
+      BEGIN;
+        UPDATE users
+        SET
+          username = '${username}',
+          is_admin = ${is_admin}
+          ${password !== "" ? `, password = '${password}'` : ""}
+        WHERE id = '${user_id}'
+        RETURNING id, username, is_admin;
 
-      UPDATE profiles
-      SET rank = '${rank}', full_name = '${full_name}'
-      WHERE user_id = '${user_id}'
-      RETURNING rank, full_name;
+        SAVEPOINT updated_user;
+      
+        UPDATE profiles
+        SET rank = '${rank}', full_name = '${full_name}'
+        WHERE user_id = '${user_id}'
+        RETURNING rank, full_name;
+
+        ROLLBACK TO updated_user;
+      COMMIT;
     `;
     result = await client.query(query);
-
     const user = {
-      rank: result[1].rows[0].rank,
-      full_name: result[1].rows[0].full_name,
-      username: result[0].rows[0].username,
-      is_admin: result[0].rows[0].is_admin,
+      rank: result[4].rows[0]?.rank,
+      full_name: result[4].rows[0]?.full_name,
+      id: result[1].rows[0].id,
+      username: result[1].rows[0].username,
+      is_admin: result[1].rows[0].is_admin,
     };
 
     const data: { user: any; access?: string } = { user };
@@ -318,9 +325,7 @@ const updateUser = async (req: AdminRequest, res: Response) => {
     res.json({ status: "ok", message: "User updated", data });
   } catch (err: any) {
     console.log(err);
-    res
-      .status(400)
-      .json({ status: "error", message: "Failed to update Users" });
+    res.status(400).json({ status: "error", message: "Failed to update user" });
   }
 };
 

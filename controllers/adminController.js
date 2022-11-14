@@ -27,7 +27,7 @@ const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         query = `
             SELECT id, username, is_admin, profiles.rank, profiles.full_name
             FROM users
-            JOIN profiles
+            LEFT JOIN profiles
             ON users.id = profiles.user_id
             ORDER BY profiles.full_name
         `;
@@ -224,6 +224,7 @@ const getFlights = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
         // Check if user is admin
         const { userId: admin_id } = req.decoded;
@@ -239,22 +240,32 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const { rank, full_name, username, password, is_admin } = req.body;
         // Update User Profile in table Users and Profiles
         query = `
-      UPDATE users
-      SET username = '${username}', is_admin = ${is_admin} ${password !== "" ? `, password = '${password}'` : ""}
-      WHERE id = '${user_id}'
-      RETURNING username, is_admin;
+      BEGIN;
+        UPDATE users
+        SET
+          username = '${username}',
+          is_admin = ${is_admin}
+          ${password !== "" ? `, password = '${password}'` : ""}
+        WHERE id = '${user_id}'
+        RETURNING id, username, is_admin;
 
-      UPDATE profiles
-      SET rank = '${rank}', full_name = '${full_name}'
-      WHERE user_id = '${user_id}'
-      RETURNING rank, full_name;
+        SAVEPOINT updated_user;
+      
+        UPDATE profiles
+        SET rank = '${rank}', full_name = '${full_name}'
+        WHERE user_id = '${user_id}'
+        RETURNING rank, full_name;
+
+        ROLLBACK TO updated_user;
+      COMMIT;
     `;
         result = yield client.query(query);
         const user = {
-            rank: result[1].rows[0].rank,
-            full_name: result[1].rows[0].full_name,
-            username: result[0].rows[0].username,
-            is_admin: result[0].rows[0].is_admin,
+            rank: (_a = result[4].rows[0]) === null || _a === void 0 ? void 0 : _a.rank,
+            full_name: (_b = result[4].rows[0]) === null || _b === void 0 ? void 0 : _b.full_name,
+            id: result[1].rows[0].id,
+            username: result[1].rows[0].username,
+            is_admin: result[1].rows[0].is_admin,
         };
         const data = { user };
         if (req.newToken) {
@@ -265,9 +276,7 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
     catch (err) {
         console.log(err);
-        res
-            .status(400)
-            .json({ status: "error", message: "Failed to update Users" });
+        res.status(400).json({ status: "error", message: "Failed to update user" });
     }
 });
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
