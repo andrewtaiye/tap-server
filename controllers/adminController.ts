@@ -12,7 +12,7 @@ interface AdminRequest {
     jti: string;
   };
   newToken: string;
-  params?: { userId: string };
+  params?: any;
   body?: any;
 }
 
@@ -327,6 +327,56 @@ const updateUser = async (req: AdminRequest, res: Response) => {
   }
 };
 
+const updateUserPosition = async (req: AdminRequest, res: Response) => {
+  try {
+    // Check if user is admin
+    const { userId: admin_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    const { positionId: id } = req.params!;
+    const { position, approval_date, is_instructor } = req.body!;
+
+    // Update User Position
+    query = `
+      UPDATE user_positions
+      SET
+        position = '${position}',
+        is_instructor = ${is_instructor}
+        ${approval_date !== null ? `, approval_date = '${approval_date}'` : ""}
+      WHERE id = '${id}'
+      RETURNING id, position, approval_date, is_instructor;
+    `;
+    result = await client.query(query);
+    const userPosition = {
+      id: result.rows[0].id,
+      position: result.rows[0].position,
+      approval_date: result.rows[0].approval_date,
+      is_instructor: result.rows[0].is_instructor,
+    };
+
+    const data: { userPosition: any; access?: string } = { userPosition };
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("User Updated");
+    res.json({ status: "ok", message: "User updated", data });
+  } catch (err: any) {
+    console.log(err);
+    res.status(400).json({ status: "error", message: "Failed to update user" });
+  }
+};
+
 const deleteUser = async (req: AdminRequest, res: Response) => {
   try {
     // Check if user is admin
@@ -381,6 +431,46 @@ const deleteUser = async (req: AdminRequest, res: Response) => {
   }
 };
 
+const deleteUserPosition = async (req: AdminRequest, res: Response) => {
+  try {
+    // Check if user is admin
+    const { userId: admin_id } = req.decoded;
+
+    let query = `SELECT is_admin FROM users WHERE id = '${admin_id}';`;
+    let result = await client.query(query);
+
+    if (result.rowCount === 0 || result.rows[0].is_admin !== true) {
+      res
+        .status(400)
+        .json({ status: "error", message: "User not authenticated" });
+      return;
+    }
+
+    const { positionId: id } = req.params!;
+
+    // Delete User_Positions, Assessments
+    query = `
+      DELETE FROM assessments WHERE user_position_id = '${id}';
+      DELETE FROM user_positions WHERE id = '${id}';
+    `;
+    await client.query(query);
+
+    const data: { access?: string } = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("User Deleted");
+    res.json({ status: "ok", message: "User position deleted", data });
+  } catch (err: any) {
+    console.log(err);
+    res
+      .status(400)
+      .json({ status: "error", message: "Failed to delete user position" });
+  }
+};
+
 module.exports = {
   getUsers,
   getUserPositions,
@@ -389,5 +479,7 @@ module.exports = {
   getCats,
   getFlights,
   updateUser,
+  updateUserPosition,
   deleteUser,
+  deleteUserPosition,
 };
