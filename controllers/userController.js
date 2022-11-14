@@ -34,12 +34,31 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         // Insert into database
         query = `
         INSERT INTO users (username, password)
-        VALUES ('${username}', '${hashedPassword}');
-
-        SELECT id FROM users WHERE username = '${username}';
+        VALUES ('${username}', '${hashedPassword}')
+        RETURNING id
       `;
         result = yield client.query(query);
-        const data = { userId: result[1].rows[0].id };
+        const payload = {
+            userId: result.rows[0].id,
+            is_admin: false,
+            hasProfile: false,
+        };
+        const accessId = uuidv4();
+        const access = jwt.sign(payload, process.env.ACCESS_SECRET, {
+            expiresIn: "20m",
+            jwtid: accessId,
+        });
+        const refreshId = uuidv4();
+        const refresh = jwt.sign(payload, process.env.REFRESH_SECRET, {
+            expiresIn: "30d",
+            jwtid: refreshId,
+        });
+        query = `
+      INSERT INTO tokens VALUES ('${accessId}', 'access', null);
+      INSERT INTO tokens VALUES ('${refreshId}', 'refresh', '${accessId}');
+    `;
+        yield client.query(query);
+        const data = { access, refresh };
         res.json({
             status: "ok",
             message: "user created",
@@ -138,8 +157,12 @@ const updatePassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const hashedPassword = yield bcrypt.hash(password, 12);
         query = `UPDATE users SET password = '${hashedPassword}' WHERE id = '${id}';`;
         yield client.query(query);
+        const data = {};
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
         console.log("Password updated");
-        res.json({ status: "ok", message: "Password updated" });
+        res.json({ status: "ok", message: "Password updated", data });
     }
     catch (err) {
         console.error(err.message);
@@ -178,8 +201,12 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
       COMMIT;
     `;
         yield client.query(query);
+        const data = {};
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
         console.log("User Deleted");
-        res.json({ status: "ok", message: "User deleted" });
+        res.json({ status: "ok", message: "User deleted", data });
     }
     catch (err) {
         console.error(err.message);

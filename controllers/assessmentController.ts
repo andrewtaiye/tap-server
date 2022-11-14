@@ -2,7 +2,11 @@ require("dotenv").config;
 import { Request, Response } from "express";
 const client = require("../db/db");
 
-const getAssessment = async (req: Request, res: Response) => {
+interface AssessmentRequest extends Request {
+  newToken?: string;
+}
+
+const getAssessment = async (req: AssessmentRequest, res: Response) => {
   try {
     const { positionId: user_position_id } = req.params;
 
@@ -19,7 +23,12 @@ const getAssessment = async (req: Request, res: Response) => {
       return;
     }
 
-    const data = result.rows;
+    const assessments = result.rows;
+    const data: any = { assessments };
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
 
     console.log("Assessments retrieved");
     res.json({ status: "ok", message: "Assessments retrieved", data });
@@ -31,7 +40,7 @@ const getAssessment = async (req: Request, res: Response) => {
   }
 };
 
-const createAssessment = async (req: Request, res: Response) => {
+const createAssessment = async (req: AssessmentRequest, res: Response) => {
   try {
     const {
       user_position_id,
@@ -66,18 +75,21 @@ const createAssessment = async (req: Request, res: Response) => {
         ${objective2 ? `'${objective2}'` : null},
         ${objective3 ? `'${objective3}'` : null},
         ${a}, ${b}, ${c}, ${d}, ${e}, ${f}, ${g}, ${h}, ${i}, ${j},
-        ${safety}, '${remarks}', ${is_simulator});
-
-      SELECT id, grade FROM assessments WHERE
-        user_position_id = '${user_position_id}' AND
-        assessment_number = ${assessment_number};
+        ${safety}, '${remarks}', ${is_simulator})
+      RETURNING id, grade;
     `;
     let result = await client.query(query);
 
-    const data = {
-      assessment_id: result[1].rows[0].id,
+    const assessments = {
+      id: result[1].rows[0].id,
       grade: result[1].rows[0].grade,
     };
+
+    const data: any = { assessments };
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
 
     console.log("Assessment created");
     res.json({ status: "ok", message: "Assessment created", data });
@@ -89,7 +101,7 @@ const createAssessment = async (req: Request, res: Response) => {
   }
 };
 
-const updateAssessment = async (req: Request, res: Response) => {
+const updateAssessment = async (req: AssessmentRequest, res: Response) => {
   try {
     const { assessmentId: id } = req.params;
     const {
@@ -132,15 +144,19 @@ const updateAssessment = async (req: Request, res: Response) => {
         safety = ${safety},
         remarks = '${remarks}',
         is_simulator = ${is_simulator}
-      WHERE id = '${id}';
-
-      SELECT grade FROM assessments WHERE id = '${id}';
+      WHERE id = '${id}'
+      RETURNING grade;
     `;
     let result = await client.query(query);
 
-    const data = {
+    const assessments = {
       grade: result[1].rows[0].grade,
     };
+    const data: any = { assessments };
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
 
     console.log("Assessment updated");
     res.json({ status: "ok", message: "Assessment updated", data });
@@ -152,7 +168,7 @@ const updateAssessment = async (req: Request, res: Response) => {
   }
 };
 
-const deleteAssessment = async (req: Request, res: Response) => {
+const deleteAssessment = async (req: AssessmentRequest, res: Response) => {
   try {
     const { assessmentId: id } = req.params;
 
@@ -160,8 +176,14 @@ const deleteAssessment = async (req: Request, res: Response) => {
     let query = `DELETE FROM assessments WHERE id = '${id}';`;
     await client.query(query);
 
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
     console.log("Assessment deleted");
-    res.json({ status: "ok", message: "Assessment deleted" });
+    res.json({ status: "ok", message: "Assessment deleted", data });
   } catch (err: any) {
     console.error(err.message);
     res

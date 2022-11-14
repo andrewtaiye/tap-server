@@ -6,7 +6,11 @@ const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
 const { fetchCall } = require("../utility/utility");
 
-const createUser = async (req: Request, res: Response) => {
+interface UserRequest extends Request {
+  newToken?: string;
+}
+
+const createUser = async (req: UserRequest, res: Response) => {
   try {
     const { username, password, confirm_password } = req.body;
 
@@ -30,13 +34,36 @@ const createUser = async (req: Request, res: Response) => {
     // Insert into database
     query = `
         INSERT INTO users (username, password)
-        VALUES ('${username}', '${hashedPassword}');
-
-        SELECT id FROM users WHERE username = '${username}';
+        VALUES ('${username}', '${hashedPassword}')
+        RETURNING id
       `;
     result = await client.query(query);
 
-    const data = { userId: result[1].rows[0].id };
+    const payload = {
+      userId: result.rows[0].id,
+      is_admin: false,
+      hasProfile: false,
+    };
+
+    const accessId = uuidv4();
+    const access = jwt.sign(payload, process.env.ACCESS_SECRET, {
+      expiresIn: "20m",
+      jwtid: accessId,
+    });
+
+    const refreshId = uuidv4();
+    const refresh = jwt.sign(payload, process.env.REFRESH_SECRET, {
+      expiresIn: "30d",
+      jwtid: refreshId,
+    });
+
+    query = `
+      INSERT INTO tokens VALUES ('${accessId}', 'access', null);
+      INSERT INTO tokens VALUES ('${refreshId}', 'refresh', '${accessId}');
+    `;
+    await client.query(query);
+
+    const data: any = { access, refresh };
 
     res.json({
       status: "ok",
@@ -49,7 +76,7 @@ const createUser = async (req: Request, res: Response) => {
   }
 };
 
-const login = async (req: Request, res: Response) => {
+const login = async (req: UserRequest, res: Response) => {
   try {
     const { username, password } = req.body;
     // Check if username exists
@@ -121,7 +148,7 @@ const login = async (req: Request, res: Response) => {
   }
 };
 
-const updatePassword = async (req: Request, res: Response) => {
+const updatePassword = async (req: UserRequest, res: Response) => {
   try {
     const { userId: id } = req.params;
     const { password, confirm_password } = req.body;
@@ -153,8 +180,14 @@ const updatePassword = async (req: Request, res: Response) => {
     query = `UPDATE users SET password = '${hashedPassword}' WHERE id = '${id}';`;
     await client.query(query);
 
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
     console.log("Password updated");
-    res.json({ status: "ok", message: "Password updated" });
+    res.json({ status: "ok", message: "Password updated", data });
   } catch (err: any) {
     console.error(err.message);
     res
@@ -163,7 +196,7 @@ const updatePassword = async (req: Request, res: Response) => {
   }
 };
 
-const deleteUser = async (req: Request, res: Response) => {
+const deleteUser = async (req: UserRequest, res: Response) => {
   try {
     const { userId: user_id } = req.params;
 
@@ -200,15 +233,21 @@ const deleteUser = async (req: Request, res: Response) => {
     `;
     await client.query(query);
 
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
     console.log("User Deleted");
-    res.json({ status: "ok", message: "User deleted" });
+    res.json({ status: "ok", message: "User deleted", data });
   } catch (err: any) {
     console.error(err.message);
     res.status(400).json({ status: "error", message: "Failed to delete user" });
   }
 };
 
-const logout = async (req: Request, res: Response) => {
+const logout = async (req: UserRequest, res: Response) => {
   try {
     const token = req.headers.authorization?.replace("Bearer ", "");
     const decoded = jwt.decode(token, process.env.ACCESS_SECRET);

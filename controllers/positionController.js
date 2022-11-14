@@ -33,7 +33,11 @@ const getPositions = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             res.json({ status: "ok", message: "User has no positions" });
             return;
         }
-        const data = result.rows;
+        const positions = result.rows;
+        const data = { positions };
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
         console.log("Positions retrieved");
         res.json({ status: "ok", message: "Positions retrieved", data });
     }
@@ -62,12 +66,15 @@ const createPosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
       INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date, is_revalidation)
       VALUES ('${user_id}', '${position}', ${start_date},
       ${end_date ? end_date : "null"},
-      ${approval_date ? approval_date : "null"}, ${is_revalidation});
+      ${approval_date ? approval_date : "null"}, ${is_revalidation})
+      RETURNING id;
     `;
-        yield client.query(query);
-        query = `SELECT id FROM user_positions WHERE user_id = '${user_id}' AND position = '${position}';`;
         result = yield client.query(query);
-        const data = { id: result.rows[0].id };
+        const id = result.rows[0].id;
+        const data = { id };
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
         res.json({ status: "ok", message: "Position created", data });
     }
     catch (err) {
@@ -98,7 +105,11 @@ const updatePosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
     WHERE id = '${id}';
     `;
         yield client.query(query);
-        res.json({ status: "ok", message: "Position updated" });
+        const data = {};
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
+        res.json({ status: "ok", message: "Position updated", data });
     }
     catch (err) {
         console.error(err.message);
@@ -112,7 +123,11 @@ const deletePosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const { positionId: id } = req.params;
         let query = `DELETE FROM user_positions WHERE id = '${id}';`;
         yield client.query(query);
-        res.json({ status: "ok", message: "Position deleted" });
+        const data = {};
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
+        res.json({ status: "ok", message: "Position deleted", data });
     }
     catch (err) {
         console.error(err.message);

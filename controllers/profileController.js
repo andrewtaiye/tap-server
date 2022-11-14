@@ -71,7 +71,11 @@ const createProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     INSERT INTO profiles (user_id, rank, full_name, date_of_birth, id_number, date_accepted, reporting_date, flight, cat)
     VALUES ('${userId}', '${rank}', '${full_name}', ${date_of_birth}, '${id_number}', ${enlistmentDate}, ${postInDate}, '${flight}', '${cat}');`;
         yield client.query(query);
-        res.json({ status: "ok", message: "Profile created" });
+        const data = {};
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
+        res.json({ status: "ok", message: "Profile created", data });
     }
     catch (err) {
         console.error(err.message);
@@ -124,8 +128,12 @@ const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 .json({ status: "error", message: "Failed to update profile" });
             return;
         }
+        const data = {};
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
         console.log("Profile updated");
-        res.json({ status: "ok", message: "Profile updated" });
+        res.json({ status: "ok", message: "Profile updated", data });
     }
     catch (err) {
         console.error(err.message);

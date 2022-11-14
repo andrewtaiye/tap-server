@@ -25,7 +25,11 @@ const getAssessment = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             res.json({ status: "ok", message: "Positions has no assessments" });
             return;
         }
-        const data = result.rows;
+        const assessments = result.rows;
+        const data = { assessments };
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
         console.log("Assessments retrieved");
         res.json({ status: "ok", message: "Assessments retrieved", data });
     }
@@ -48,17 +52,18 @@ const createAssessment = (req, res) => __awaiter(void 0, void 0, void 0, functio
         ${objective2 ? `'${objective2}'` : null},
         ${objective3 ? `'${objective3}'` : null},
         ${a}, ${b}, ${c}, ${d}, ${e}, ${f}, ${g}, ${h}, ${i}, ${j},
-        ${safety}, '${remarks}', ${is_simulator});
-
-      SELECT id, grade FROM assessments WHERE
-        user_position_id = '${user_position_id}' AND
-        assessment_number = ${assessment_number};
+        ${safety}, '${remarks}', ${is_simulator})
+      RETURNING id, grade;
     `;
         let result = yield client.query(query);
-        const data = {
-            assessment_id: result[1].rows[0].id,
+        const assessments = {
+            id: result[1].rows[0].id,
             grade: result[1].rows[0].grade,
         };
+        const data = { assessments };
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
         console.log("Assessment created");
         res.json({ status: "ok", message: "Assessment created", data });
     }
@@ -89,14 +94,17 @@ const updateAssessment = (req, res) => __awaiter(void 0, void 0, void 0, functio
         safety = ${safety},
         remarks = '${remarks}',
         is_simulator = ${is_simulator}
-      WHERE id = '${id}';
-
-      SELECT grade FROM assessments WHERE id = '${id}';
+      WHERE id = '${id}'
+      RETURNING grade;
     `;
         let result = yield client.query(query);
-        const data = {
+        const assessments = {
             grade: result[1].rows[0].grade,
         };
+        const data = { assessments };
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
         console.log("Assessment updated");
         res.json({ status: "ok", message: "Assessment updated", data });
     }
@@ -113,8 +121,12 @@ const deleteAssessment = (req, res) => __awaiter(void 0, void 0, void 0, functio
         // Delete assessment
         let query = `DELETE FROM assessments WHERE id = '${id}';`;
         yield client.query(query);
+        const data = {};
+        if (req.newToken) {
+            data.access = req.newToken;
+        }
         console.log("Assessment deleted");
-        res.json({ status: "ok", message: "Assessment deleted" });
+        res.json({ status: "ok", message: "Assessment deleted", data });
     }
     catch (err) {
         console.error(err.message);

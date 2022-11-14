@@ -3,7 +3,11 @@ import { Request, Response } from "express";
 const { fetchCall } = require("../utility/utility");
 const client = require("../db/db");
 
-const getProfile = async (req: Request, res: Response) => {
+interface ProfileRequest extends Request {
+  newToken?: string;
+}
+
+const getProfile = async (req: ProfileRequest, res: Response) => {
   try {
     const { userId: user_id } = req.params;
 
@@ -47,7 +51,7 @@ const getProfile = async (req: Request, res: Response) => {
   }
 };
 
-const createProfile = async (req: Request, res: Response) => {
+const createProfile = async (req: ProfileRequest, res: Response) => {
   try {
     const {
       userId,
@@ -82,7 +86,13 @@ const createProfile = async (req: Request, res: Response) => {
     VALUES ('${userId}', '${rank}', '${full_name}', ${date_of_birth}, '${id_number}', ${enlistmentDate}, ${postInDate}, '${flight}', '${cat}');`;
     await client.query(query);
 
-    res.json({ status: "ok", message: "Profile created" });
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    res.json({ status: "ok", message: "Profile created", data });
   } catch (err: any) {
     console.error(err.message);
     res
@@ -91,7 +101,7 @@ const createProfile = async (req: Request, res: Response) => {
   }
 };
 
-const updateProfile = async (req: Request, res: Response) => {
+const updateProfile = async (req: ProfileRequest, res: Response) => {
   try {
     const {
       date_of_birth,
@@ -151,8 +161,14 @@ const updateProfile = async (req: Request, res: Response) => {
       return;
     }
 
+    const data: any = {};
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
     console.log("Profile updated");
-    res.json({ status: "ok", message: "Profile updated" });
+    res.json({ status: "ok", message: "Profile updated", data });
   } catch (err: any) {
     console.error(err.message);
     res
