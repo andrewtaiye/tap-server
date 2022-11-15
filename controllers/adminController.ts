@@ -444,6 +444,7 @@ const updateUser = async (req: AdminRequest, res: Response) => {
         SET rank = '${rank}', full_name = '${full_name}'
         WHERE user_id = '${user_id}'
         RETURNING rank, full_name;
+
       COMMIT;
     `;
     result = await client.query(query);
@@ -464,6 +465,7 @@ const updateUser = async (req: AdminRequest, res: Response) => {
     console.log("User Updated");
     res.json({ status: "ok", message: "User updated", data });
   } catch (err: any) {
+    await client.query("ROLLBACK;");
     console.log(err);
     res.status(400).json({ status: "error", message: "Failed to update user" });
   }
@@ -796,6 +798,10 @@ const deleteRank = async (req: AdminRequest, res: Response) => {
 
     // Delete rank
     query = `
+      UPDATE profiles
+      SET rank = null
+      WHERE rank = '${rank}';
+
       DELETE FROM ranks WHERE ranks = '${rank}';
     `;
     await client.query(query);

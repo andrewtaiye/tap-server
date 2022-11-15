@@ -371,6 +371,7 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         SET rank = '${rank}', full_name = '${full_name}'
         WHERE user_id = '${user_id}'
         RETURNING rank, full_name;
+
       COMMIT;
     `;
         result = yield client.query(query);
@@ -389,6 +390,7 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.json({ status: "ok", message: "User updated", data });
     }
     catch (err) {
+        yield client.query("ROLLBACK;");
         console.log(err);
         res.status(400).json({ status: "error", message: "Failed to update user" });
     }
@@ -664,6 +666,10 @@ const deleteRank = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const { rank } = req.params;
         // Delete rank
         query = `
+      UPDATE profiles
+      SET rank = null
+      WHERE rank = '${rank}';
+
       DELETE FROM ranks WHERE ranks = '${rank}';
     `;
         yield client.query(query);

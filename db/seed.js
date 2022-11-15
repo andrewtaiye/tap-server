@@ -115,31 +115,31 @@ const seed = (seedAll) => __awaiter(void 0, void 0, void 0, function* () {
       
           CREATE TABLE IF NOT EXISTS profiles (
           user_id uuid PRIMARY KEY UNIQUE,
-          rank varchar(4) NOT NULL,
+          rank varchar(4),
           full_name varchar(50) NOT NULL,
           id_number varchar(9) NOT NULL,
           date_of_birth int NOT NULL,
           date_accepted int NOT NULL,
           reporting_date int NOT NULL,
-          cat varchar(3) NOT NULL,
-          flight varchar(15) NOT NULL,
+          cat varchar(3),
+          flight varchar(15),
           CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users (id),
-          CONSTRAINT FK_rank FOREIGN KEY (rank) REFERENCES ranks (ranks),
-          CONSTRAINT FK_cat FOREIGN KEY (cat) REFERENCES cats (cats),
-          CONSTRAINT FK_flight FOREIGN KEY (flight) REFERENCES flights (flights)
+          CONSTRAINT FK_rank FOREIGN KEY (rank) REFERENCES ranks (ranks) ON UPDATE CASCADE,
+          CONSTRAINT FK_cat FOREIGN KEY (cat) REFERENCES cats (cats) ON UPDATE CASCADE,
+          CONSTRAINT FK_flight FOREIGN KEY (flight) REFERENCES flights (flights) ON UPDATE CASCADE
           );
       
           CREATE TABLE IF NOT EXISTS user_positions (
           id uuid PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
           user_id uuid NOT NULL,
-          position char(3) NOT NULL,
+          position char(3),
           start_date int NOT NULL,
           end_date int,
           approval_date int,
           is_revalidation boolean NOT NULL DEFAULT false,
           is_instructor boolean NOT NULL DEFAULT false,
           CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users (id),
-          CONSTRAINT FK_position FOREIGN KEY (position) REFERENCES positions (positions)
+          CONSTRAINT FK_position FOREIGN KEY (position) REFERENCES positions (positions) ON UPDATE CASCADE
           );
       
           CREATE TABLE IF NOT EXISTS assessments (
