@@ -13,8 +13,8 @@ require("dotenv").config;
 const client = require("../db/db");
 const getPositions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { userId } = req.params;
-        let query = `SELECT id FROM users WHERE id = '${userId}';`;
+        const { user_id } = req.params;
+        let query = `SELECT id FROM users WHERE id = '${user_id}';`;
         let result = yield client.query(query);
         // Check if user exists
         if (result.rowCount === 0) {
@@ -26,7 +26,7 @@ const getPositions = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
         // Retrieve user positions
         query = `
-      SELECT * FROM user_positions WHERE user_id = '${userId}' ORDER BY start_date;
+      SELECT * FROM user_positions WHERE user_id = '${user_id}' ORDER BY start_date;
     `;
         result = yield client.query(query);
         if (result.rowCount === 0) {
@@ -87,9 +87,9 @@ const createPosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
 const updatePosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { position, start_date, end_date, approval_date, is_revalidation } = req.body;
-        const { positionId: id } = req.params;
+        const { user_position_id } = req.params;
         // Check if user-position exists
-        let query = `SELECT id FROM user_positions WHERE id = '${id}';`;
+        let query = `SELECT id FROM user_positions WHERE id = '${user_position_id}';`;
         let result = yield client.query(query);
         if (result.rowCount === 0) {
             console.log("Error: User-Position does not exist");
@@ -102,7 +102,7 @@ const updatePosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
         query = `
     UPDATE user_positions
     SET position = '${position}', start_date = ${start_date}, end_date = ${end_date}, approval_date = ${approval_date}, is_revalidation = '${is_revalidation}'
-    WHERE id = '${id}';
+    WHERE id = '${user_position_id}';
     `;
         yield client.query(query);
         const data = {};
@@ -120,8 +120,8 @@ const updatePosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 const deletePosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { positionId: id } = req.params;
-        let query = `DELETE FROM user_positions WHERE id = '${id}';`;
+        const { user_position_id } = req.params;
+        let query = `DELETE FROM user_positions WHERE id = '${user_position_id}';`;
         yield client.query(query);
         const data = {};
         if (req.newToken) {

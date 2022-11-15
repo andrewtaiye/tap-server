@@ -13,7 +13,7 @@ require("dotenv").config;
 const client = require("../db/db");
 const getAssessment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { positionId: user_position_id } = req.params;
+        const { user_position_id } = req.params;
         // Retrieve assessments
         let query = `
       SELECT * FROM assessments WHERE user_position_id = '${user_position_id}'
@@ -56,11 +56,11 @@ const createAssessment = (req, res) => __awaiter(void 0, void 0, void 0, functio
       RETURNING id, grade;
     `;
         let result = yield client.query(query);
-        const assessments = {
-            id: result[1].rows[0].id,
-            grade: result[1].rows[0].grade,
+        const assessment = {
+            id: result.rows[0].id,
+            grade: result.rows[0].grade,
         };
-        const data = { assessments };
+        const data = { assessment };
         if (req.newToken) {
             data.access = req.newToken;
         }
@@ -76,7 +76,7 @@ const createAssessment = (req, res) => __awaiter(void 0, void 0, void 0, functio
 });
 const updateAssessment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { assessmentId: id } = req.params;
+        const { assessment_id } = req.params;
         const { user_position_id, assessment_number, instructor, date, intensity, objective1, objective2, objective3, a, b, c, d, e, f, g, h, i, j, safety, is_simulator, remarks, } = req.body;
         // Update assessment
         let query = `
@@ -94,14 +94,14 @@ const updateAssessment = (req, res) => __awaiter(void 0, void 0, void 0, functio
         safety = ${safety},
         remarks = '${remarks}',
         is_simulator = ${is_simulator}
-      WHERE id = '${id}'
+      WHERE id = '${assessment_id}'
       RETURNING grade;
     `;
         let result = yield client.query(query);
-        const assessments = {
-            grade: result[1].rows[0].grade,
+        const assessment = {
+            grade: result.rows[0].grade,
         };
-        const data = { assessments };
+        const data = { assessment };
         if (req.newToken) {
             data.access = req.newToken;
         }
@@ -117,9 +117,9 @@ const updateAssessment = (req, res) => __awaiter(void 0, void 0, void 0, functio
 });
 const deleteAssessment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { assessmentId: id } = req.params;
+        const { assessment_id } = req.params;
         // Delete assessment
-        let query = `DELETE FROM assessments WHERE id = '${id}';`;
+        let query = `DELETE FROM assessments WHERE id = '${assessment_id}';`;
         yield client.query(query);
         const data = {};
         if (req.newToken) {

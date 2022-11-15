@@ -80,12 +80,12 @@ const createAssessment = async (req: AssessmentRequest, res: Response) => {
     `;
     let result = await client.query(query);
 
-    const assessments = {
-      id: result[1].rows[0].id,
-      grade: result[1].rows[0].grade,
+    const assessment = {
+      id: result.rows[0].id,
+      grade: result.rows[0].grade,
     };
 
-    const data: any = { assessments };
+    const data: any = { assessment };
 
     if (req.newToken) {
       data.access = req.newToken;
@@ -149,10 +149,10 @@ const updateAssessment = async (req: AssessmentRequest, res: Response) => {
     `;
     let result = await client.query(query);
 
-    const assessments = {
-      grade: result[1].rows[0].grade,
+    const assessment = {
+      grade: result.rows[0].grade,
     };
-    const data: any = { assessments };
+    const data: any = { assessment };
 
     if (req.newToken) {
       data.access = req.newToken;

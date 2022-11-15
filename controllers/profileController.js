@@ -14,7 +14,7 @@ const { fetchCall } = require("../utility/utility");
 const client = require("../db/db");
 const getProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { userId: user_id } = req.params;
+        const { user_id } = req.params;
         let query = `SELECT id FROM users WHERE id = '${user_id}';`;
         let result = yield client.query(query);
         // Check if user exists
@@ -89,7 +89,7 @@ const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     var _a;
     try {
         const { date_of_birth, id_number, date_accepted, reporting_date, flight, cat, password, confirm_password, } = req.body;
-        const { userId: user_id } = req.params;
+        const { user_id } = req.params;
         // Check if user exists
         let query = `SELECT id FROM users WHERE id = '${user_id}';`;
         let result = yield client.query(query);

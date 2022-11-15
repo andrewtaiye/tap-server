@@ -352,7 +352,7 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 .json({ status: "error", message: "User not authenticated" });
             return;
         }
-        const { userId: user_id } = req.params;
+        const { user_id } = req.params;
         const { rank, full_name, username, password, is_admin } = req.body;
         // Update User Profile in table Users and Profiles
         query = `
@@ -405,7 +405,7 @@ const updateUserPosition = (req, res) => __awaiter(void 0, void 0, void 0, funct
                 .json({ status: "error", message: "User not authenticated" });
             return;
         }
-        const { positionId: id } = req.params;
+        const { user_position_id } = req.params;
         const { position, approval_date, is_instructor } = req.body;
         // Update User Position
         query = `
@@ -414,7 +414,7 @@ const updateUserPosition = (req, res) => __awaiter(void 0, void 0, void 0, funct
         position = '${position}',
         is_instructor = ${is_instructor}
         ${approval_date !== null ? `, approval_date = '${approval_date}'` : ""}
-      WHERE id = '${id}'
+      WHERE id = '${user_position_id}'
       RETURNING id, position, approval_date, is_instructor;
     `;
         result = yield client.query(query);
@@ -586,7 +586,7 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 .json({ status: "error", message: "User not authenticated" });
             return;
         }
-        const { userId: user_id } = req.params;
+        const { user_id } = req.params;
         // Retrieve user_position ID
         query = `SELECT id FROM user_positions WHERE user_id = '${user_id}';`;
         result = yield client.query(query);
@@ -628,11 +628,11 @@ const deleteUserPosition = (req, res) => __awaiter(void 0, void 0, void 0, funct
                 .json({ status: "error", message: "User not authenticated" });
             return;
         }
-        const { positionId: id } = req.params;
+        const { user_position_id } = req.params;
         // Delete User_Positions, Assessments
         query = `
-      DELETE FROM assessments WHERE user_position_id = '${id}';
-      DELETE FROM user_positions WHERE id = '${id}';
+      DELETE FROM assessments WHERE user_position_id = '${user_position_id}';
+      DELETE FROM user_positions WHERE id = '${user_position_id}';
     `;
         yield client.query(query);
         const data = {};

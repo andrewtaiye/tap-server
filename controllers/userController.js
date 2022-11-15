@@ -133,10 +133,10 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 const updatePassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { userId: id } = req.params;
+        const { user_id } = req.params;
         const { password, confirm_password } = req.body;
         // Check if user exists
-        let query = `SELECT * FROM users WHERE id = '${id}';`;
+        let query = `SELECT * FROM users WHERE id = '${user_id}';`;
         let result = yield client.query(query);
         if (result.rowCount === 0) {
             console.log("Error: User does not exist");
@@ -155,7 +155,7 @@ const updatePassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
         }
         // Update password
         const hashedPassword = yield bcrypt.hash(password, 12);
-        query = `UPDATE users SET password = '${hashedPassword}' WHERE id = '${id}';`;
+        query = `UPDATE users SET password = '${hashedPassword}' WHERE id = '${user_id}';`;
         yield client.query(query);
         const data = {};
         if (req.newToken) {
@@ -173,7 +173,7 @@ const updatePassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { userId: user_id } = req.params;
+        const { user_id } = req.params;
         // Check if user exists
         let query = `SELECT id FROM users WHERE id = '${user_id}';`;
         let result = yield client.query(query);
