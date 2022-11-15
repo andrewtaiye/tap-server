@@ -209,6 +209,7 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.json({ status: "ok", message: "User deleted", data });
     }
     catch (err) {
+        yield client.query("ROLLBACK;");
         console.error(err.message);
         res.status(400).json({ status: "error", message: "Failed to delete user" });
     }

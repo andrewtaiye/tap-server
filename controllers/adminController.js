@@ -371,7 +371,6 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         SET rank = '${rank}', full_name = '${full_name}'
         WHERE user_id = '${user_id}'
         RETURNING rank, full_name;
-
       COMMIT;
     `;
         result = yield client.query(query);
@@ -614,6 +613,7 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.json({ status: "ok", message: "User deleted", data });
     }
     catch (err) {
+        yield client.query("ROLLBACK;");
         console.log(err);
         res.status(400).json({ status: "error", message: "Failed to delete user" });
     }

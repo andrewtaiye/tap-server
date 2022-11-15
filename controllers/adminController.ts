@@ -444,7 +444,6 @@ const updateUser = async (req: AdminRequest, res: Response) => {
         SET rank = '${rank}', full_name = '${full_name}'
         WHERE user_id = '${user_id}'
         RETURNING rank, full_name;
-
       COMMIT;
     `;
     result = await client.query(query);
@@ -734,6 +733,7 @@ const deleteUser = async (req: AdminRequest, res: Response) => {
     console.log("User Deleted");
     res.json({ status: "ok", message: "User deleted", data });
   } catch (err: any) {
+    await client.query("ROLLBACK;");
     console.log(err);
     res.status(400).json({ status: "error", message: "Failed to delete user" });
   }

@@ -242,6 +242,7 @@ const deleteUser = async (req: UserRequest, res: Response) => {
     console.log("User Deleted");
     res.json({ status: "ok", message: "User deleted", data });
   } catch (err: any) {
+    await client.query("ROLLBACK;");
     console.error(err.message);
     res.status(400).json({ status: "error", message: "Failed to delete user" });
   }
