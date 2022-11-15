@@ -464,16 +464,20 @@ const seed = (seedAll) => __awaiter(void 0, void 0, void 0, function* () {
             7,
             5,
             true,
-            'Needs more training',
+            'Last Seed Entry',
             false
           );
   
       COMMIT;
   
-      SELECT id FROM assessments WHERE position = 'FIS';
-    `, (err, res) => {
+      SELECT id FROM assessments WHERE remarks = 'Last Seed Entry';
+    `, (err, res) => __awaiter(void 0, void 0, void 0, function* () {
+            if (err) {
+                yield client.query("ROLLBACK;");
+                throw err;
+            }
             console.log("Inserted Seed");
-        });
+        }));
         console.log("Seed All - Seeding Completed");
     }));
 });

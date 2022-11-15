@@ -465,15 +465,19 @@ const seed = async (seedAll: boolean) => {
             7,
             5,
             true,
-            'Needs more training',
+            'Last Seed Entry',
             false
           );
   
       COMMIT;
   
-      SELECT id FROM assessments WHERE position = 'FIS';
+      SELECT id FROM assessments WHERE remarks = 'Last Seed Entry';
     `,
-      (err: Error, res: any) => {
+      async (err: Error, res: any) => {
+        if (err) {
+          await client.query("ROLLBACK;");
+          throw err;
+        }
         console.log("Inserted Seed");
       }
     );

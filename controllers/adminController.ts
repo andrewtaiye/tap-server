@@ -839,6 +839,10 @@ const deletePosition = async (req: AdminRequest, res: Response) => {
 
     // Delete position
     query = `
+      UPDATE user_positions
+      SET position = null
+      WHERE position = '${position}';
+
       DELETE FROM positions WHERE positions = '${position}';
     `;
     await client.query(query);
@@ -878,6 +882,10 @@ const deleteCat = async (req: AdminRequest, res: Response) => {
 
     // Delete cat
     query = `
+      UPDATE profiles
+      SET cat = null
+      WHERE cat = '${cat}';
+
       DELETE FROM cats WHERE cats = '${cat}';
     `;
     await client.query(query);
@@ -915,6 +923,10 @@ const deleteFlight = async (req: AdminRequest, res: Response) => {
 
     // Delete flight
     query = `
+      UPDATE profiles
+      SET flight = null
+      WHERE flight = '${flight}';
+
       DELETE FROM flights WHERE flights = '${flight}';
     `;
     await client.query(query);

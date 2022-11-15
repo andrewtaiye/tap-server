@@ -700,6 +700,10 @@ const deletePosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const { position } = req.params;
         // Delete position
         query = `
+      UPDATE user_positions
+      SET position = null
+      WHERE position = '${position}';
+
       DELETE FROM positions WHERE positions = '${position}';
     `;
         yield client.query(query);
@@ -732,6 +736,10 @@ const deleteCat = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { cat } = req.params;
         // Delete cat
         query = `
+      UPDATE profiles
+      SET cat = null
+      WHERE cat = '${cat}';
+
       DELETE FROM cats WHERE cats = '${cat}';
     `;
         yield client.query(query);
@@ -762,6 +770,10 @@ const deleteFlight = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const { flight } = req.params;
         // Delete flight
         query = `
+      UPDATE profiles
+      SET flight = null
+      WHERE flight = '${flight}';
+
       DELETE FROM flights WHERE flights = '${flight}';
     `;
         yield client.query(query);
