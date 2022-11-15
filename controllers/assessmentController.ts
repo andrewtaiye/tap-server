@@ -8,7 +8,7 @@ interface AssessmentRequest extends Request {
 
 const getAssessment = async (req: AssessmentRequest, res: Response) => {
   try {
-    const { positionId: user_position_id } = req.params;
+    const { user_position_id } = req.params;
 
     // Retrieve assessments
     let query = `
@@ -103,7 +103,7 @@ const createAssessment = async (req: AssessmentRequest, res: Response) => {
 
 const updateAssessment = async (req: AssessmentRequest, res: Response) => {
   try {
-    const { assessmentId: id } = req.params;
+    const { assessment_id } = req.params;
     const {
       user_position_id,
       assessment_number,
@@ -144,7 +144,7 @@ const updateAssessment = async (req: AssessmentRequest, res: Response) => {
         safety = ${safety},
         remarks = '${remarks}',
         is_simulator = ${is_simulator}
-      WHERE id = '${id}'
+      WHERE id = '${assessment_id}'
       RETURNING grade;
     `;
     let result = await client.query(query);
@@ -170,10 +170,10 @@ const updateAssessment = async (req: AssessmentRequest, res: Response) => {
 
 const deleteAssessment = async (req: AssessmentRequest, res: Response) => {
   try {
-    const { assessmentId: id } = req.params;
+    const { assessment_id } = req.params;
 
     // Delete assessment
-    let query = `DELETE FROM assessments WHERE id = '${id}';`;
+    let query = `DELETE FROM assessments WHERE id = '${assessment_id}';`;
     await client.query(query);
 
     const data: any = {};

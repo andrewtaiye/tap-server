@@ -9,7 +9,7 @@ interface ProfileRequest extends Request {
 
 const getProfile = async (req: ProfileRequest, res: Response) => {
   try {
-    const { userId: user_id } = req.params;
+    const { user_id } = req.params;
 
     let query = `SELECT id FROM users WHERE id = '${user_id}';`;
     let result = await client.query(query);
@@ -114,7 +114,7 @@ const updateProfile = async (req: ProfileRequest, res: Response) => {
       password,
       confirm_password,
     } = req.body;
-    const { userId: user_id } = req.params;
+    const { user_id } = req.params;
 
     // Check if user exists
     let query = `SELECT id FROM users WHERE id = '${user_id}';`;

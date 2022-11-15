@@ -8,9 +8,9 @@ const {
   deletePosition,
 } = require("../controllers/positionController");
 
-router.get("/get/:userId", auth, getPositions);
+router.get("/get/:user_id", auth, getPositions);
 router.put("/create", auth, createPosition);
-router.patch("/update/:positionId", auth, updatePosition);
-router.delete("/delete/:positionId", auth, deletePosition);
+router.patch("/update/:user_position_id", auth, updatePosition);
+router.delete("/delete/:user_position_id", auth, deletePosition);
 
 module.exports = router;

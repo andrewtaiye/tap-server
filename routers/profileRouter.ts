@@ -7,8 +7,8 @@ const {
   updateProfile,
 } = require("../controllers/profileController");
 
-router.get("/get/:userId", getProfile);
+router.get("/get/:user_id", getProfile);
 router.put("/create", auth, createProfile);
-router.patch("/update/:userId", auth, updateProfile);
+router.patch("/update/:user_id", auth, updateProfile);
 
 module.exports = router;

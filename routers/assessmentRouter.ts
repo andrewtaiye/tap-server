@@ -8,9 +8,9 @@ const {
   deleteAssessment,
 } = require("../controllers/assessmentController");
 
-router.get("/get/:positionId", auth, getAssessment);
+router.get("/get/:user_position_id", auth, getAssessment);
 router.put("/create", auth, createAssessment);
-router.patch("/update/:assessmentId", auth, updateAssessment);
-router.delete("/delete/:assessmentId", auth, deleteAssessment);
+router.patch("/update/:assessment_id", auth, updateAssessment);
+router.delete("/delete/:assessment_id", auth, deleteAssessment);
 
 module.exports = router;

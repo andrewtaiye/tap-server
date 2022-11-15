@@ -150,11 +150,11 @@ const login = async (req: UserRequest, res: Response) => {
 
 const updatePassword = async (req: UserRequest, res: Response) => {
   try {
-    const { userId: id } = req.params;
+    const { user_id } = req.params;
     const { password, confirm_password } = req.body;
 
     // Check if user exists
-    let query = `SELECT * FROM users WHERE id = '${id}';`;
+    let query = `SELECT * FROM users WHERE id = '${user_id}';`;
     let result = await client.query(query);
 
     if (result.rowCount === 0) {
@@ -177,7 +177,7 @@ const updatePassword = async (req: UserRequest, res: Response) => {
     // Update password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    query = `UPDATE users SET password = '${hashedPassword}' WHERE id = '${id}';`;
+    query = `UPDATE users SET password = '${hashedPassword}' WHERE id = '${user_id}';`;
     await client.query(query);
 
     const data: any = {};
@@ -198,7 +198,7 @@ const updatePassword = async (req: UserRequest, res: Response) => {
 
 const deleteUser = async (req: UserRequest, res: Response) => {
   try {
-    const { userId: user_id } = req.params;
+    const { user_id } = req.params;
 
     // Check if user exists
     let query = `SELECT id FROM users WHERE id = '${user_id}';`;
