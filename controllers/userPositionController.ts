@@ -2,11 +2,11 @@ require("dotenv").config;
 import { Request, Response } from "express";
 const client = require("../db/db");
 
-interface PositionRequest extends Request {
+interface UserPositionRequest extends Request {
   newToken?: string;
 }
 
-const getPositions = async (req: PositionRequest, res: Response) => {
+const getUserPositions = async (req: UserPositionRequest, res: Response) => {
   try {
     const { user_id } = req.params;
 
@@ -40,17 +40,17 @@ const getPositions = async (req: PositionRequest, res: Response) => {
       data.access = req.newToken;
     }
 
-    console.log("Positions retrieved");
-    res.json({ status: "ok", message: "Positions retrieved", data });
+    console.log("User positions retrieved");
+    res.json({ status: "ok", message: "User positions retrieved", data });
   } catch (err: any) {
     console.error(err.message);
     res
       .status(400)
-      .json({ status: "error", message: "Failed to retrieve position" });
+      .json({ status: "error", message: "Failed to retrieve user positions" });
   }
 };
 
-const createPosition = async (req: PositionRequest, res: Response) => {
+const createUserPosition = async (req: UserPositionRequest, res: Response) => {
   try {
     const {
       user_id,
@@ -69,7 +69,7 @@ const createPosition = async (req: PositionRequest, res: Response) => {
       console.log("Error: User does not exist");
       res
         .status(400)
-        .json({ status: "error", message: "Failed to retrieve profile" });
+        .json({ status: "error", message: "Failed to retrieve user" });
       return;
     }
 
@@ -90,16 +90,16 @@ const createPosition = async (req: PositionRequest, res: Response) => {
       data.access = req.newToken;
     }
 
-    res.json({ status: "ok", message: "Position created", data });
+    res.json({ status: "ok", message: "User position created", data });
   } catch (err: any) {
     console.error(err.message);
     res
       .status(400)
-      .json({ status: "error", message: "Failed to create position" });
+      .json({ status: "error", message: "Failed to create user position" });
   }
 };
 
-const updatePosition = async (req: PositionRequest, res: Response) => {
+const updateUserPosition = async (req: UserPositionRequest, res: Response) => {
   try {
     const { position, start_date, end_date, approval_date, is_revalidation } =
       req.body;
@@ -110,10 +110,10 @@ const updatePosition = async (req: PositionRequest, res: Response) => {
     let result = await client.query(query);
 
     if (result.rowCount === 0) {
-      console.log("Error: User-Position does not exist");
+      console.log("Error: User position does not exist");
       res
         .status(400)
-        .json({ status: "error", message: "Failed to update position" });
+        .json({ status: "error", message: "Failed to update user position" });
       return;
     }
 
@@ -131,16 +131,16 @@ const updatePosition = async (req: PositionRequest, res: Response) => {
       data.access = req.newToken;
     }
 
-    res.json({ status: "ok", message: "Position updated", data });
+    res.json({ status: "ok", message: "User position updated", data });
   } catch (err: any) {
     console.error(err.message);
     res
       .status(400)
-      .json({ status: "error", message: "Failed to update position" });
+      .json({ status: "error", message: "Failed to update user position" });
   }
 };
 
-const deletePosition = async (req: PositionRequest, res: Response) => {
+const deleteUserPosition = async (req: UserPositionRequest, res: Response) => {
   try {
     const { user_position_id } = req.params;
 
@@ -153,18 +153,18 @@ const deletePosition = async (req: PositionRequest, res: Response) => {
       data.access = req.newToken;
     }
 
-    res.json({ status: "ok", message: "Position deleted", data });
+    res.json({ status: "ok", message: "User position deleted", data });
   } catch (err: any) {
     console.error(err.message);
     res
       .status(400)
-      .json({ status: "error", message: "Failed to delete position" });
+      .json({ status: "error", message: "Failed to delete user position" });
   }
 };
 
 module.exports = {
-  getPositions,
-  createPosition,
-  updatePosition,
-  deletePosition,
+  getUserPositions,
+  createUserPosition,
+  updateUserPosition,
+  deleteUserPosition,
 };

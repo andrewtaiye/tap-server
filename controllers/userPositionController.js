@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv").config;
 const client = require("../db/db");
-const getPositions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getUserPositions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { user_id } = req.params;
         let query = `SELECT id FROM users WHERE id = '${user_id}';`;
@@ -38,17 +38,17 @@ const getPositions = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         if (req.newToken) {
             data.access = req.newToken;
         }
-        console.log("Positions retrieved");
-        res.json({ status: "ok", message: "Positions retrieved", data });
+        console.log("User positions retrieved");
+        res.json({ status: "ok", message: "User positions retrieved", data });
     }
     catch (err) {
         console.error(err.message);
         res
             .status(400)
-            .json({ status: "error", message: "Failed to retrieve position" });
+            .json({ status: "error", message: "Failed to retrieve user positions" });
     }
 });
-const createPosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const createUserPosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { user_id, position, start_date, end_date, approval_date, is_revalidation, } = req.body;
         let query = `SELECT id FROM users WHERE id = '${user_id}';`;
@@ -58,7 +58,7 @@ const createPosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
             console.log("Error: User does not exist");
             res
                 .status(400)
-                .json({ status: "error", message: "Failed to retrieve profile" });
+                .json({ status: "error", message: "Failed to retrieve user" });
             return;
         }
         // Insert new position
@@ -75,16 +75,16 @@ const createPosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
         if (req.newToken) {
             data.access = req.newToken;
         }
-        res.json({ status: "ok", message: "Position created", data });
+        res.json({ status: "ok", message: "User position created", data });
     }
     catch (err) {
         console.error(err.message);
         res
             .status(400)
-            .json({ status: "error", message: "Failed to create position" });
+            .json({ status: "error", message: "Failed to create user position" });
     }
 });
-const updatePosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const updateUserPosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { position, start_date, end_date, approval_date, is_revalidation } = req.body;
         const { user_position_id } = req.params;
@@ -92,10 +92,10 @@ const updatePosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
         let query = `SELECT id FROM user_positions WHERE id = '${user_position_id}';`;
         let result = yield client.query(query);
         if (result.rowCount === 0) {
-            console.log("Error: User-Position does not exist");
+            console.log("Error: User position does not exist");
             res
                 .status(400)
-                .json({ status: "error", message: "Failed to update position" });
+                .json({ status: "error", message: "Failed to update user position" });
             return;
         }
         // Update position
@@ -109,16 +109,16 @@ const updatePosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
         if (req.newToken) {
             data.access = req.newToken;
         }
-        res.json({ status: "ok", message: "Position updated", data });
+        res.json({ status: "ok", message: "User position updated", data });
     }
     catch (err) {
         console.error(err.message);
         res
             .status(400)
-            .json({ status: "error", message: "Failed to update position" });
+            .json({ status: "error", message: "Failed to update user position" });
     }
 });
-const deletePosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteUserPosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { user_position_id } = req.params;
         let query = `DELETE FROM user_positions WHERE id = '${user_position_id}';`;
@@ -127,18 +127,18 @@ const deletePosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
         if (req.newToken) {
             data.access = req.newToken;
         }
-        res.json({ status: "ok", message: "Position deleted", data });
+        res.json({ status: "ok", message: "User position deleted", data });
     }
     catch (err) {
         console.error(err.message);
         res
             .status(400)
-            .json({ status: "error", message: "Failed to delete position" });
+            .json({ status: "error", message: "Failed to delete user position" });
     }
 });
 module.exports = {
-    getPositions,
-    createPosition,
-    updatePosition,
-    deletePosition,
+    getUserPositions,
+    createUserPosition,
+    updateUserPosition,
+    deleteUserPosition,
 };

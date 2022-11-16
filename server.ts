@@ -7,7 +7,7 @@ seed(true);
 const app: Express = express();
 const userRouter = require("./routers/userRouter");
 const profileRouter = require("./routers/profileRouter");
-const positionRouter = require("./routers/positionRouter");
+const userPositionRouter = require("./routers/userPositionRouter");
 const assessmentRouter = require("./routers/assessmentRouter");
 const miscRouter = require("./routers/miscRouter");
 const adminRouter = require("./routers/adminRouter");
@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/user", userRouter);
 app.use("/profile", profileRouter);
-app.use("/position", positionRouter);
+app.use("/user_position", userPositionRouter);
 app.use("/assessment", assessmentRouter);
 app.use("/misc", miscRouter);
 app.use("/admin", adminRouter);
