@@ -11,7 +11,7 @@ router.get("/enum", async (req, res) => {
     let data: any = {};
 
     for (const table of enumTables) {
-      let query = `SELECT * FROM ${table};`;
+      let query = `SELECT * FROM ${table} ORDER BY ${table};`;
       let result = await client.query(query);
       const rowArray = result.rows;
 

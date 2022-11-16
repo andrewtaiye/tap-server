@@ -22,7 +22,7 @@ router.get("/enum", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const enumTables = ["ranks", "flights", "cats", "positions"];
         let data = {};
         for (const table of enumTables) {
-            let query = `SELECT * FROM ${table};`;
+            let query = `SELECT * FROM ${table} ORDER BY ${table};`;
             let result = yield client.query(query);
             const rowArray = result.rows;
             for (let i = 0; i < rowArray.length; i++) {
