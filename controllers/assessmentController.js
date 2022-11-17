@@ -42,7 +42,8 @@ const getAssessment = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 const createAssessment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { user_position_id, assessment_number, instructor, date, intensity, objective1, objective2, objective3, a, b, c, d, e, f, g, h, i, j, safety, is_simulator, remarks, } = req.body;
+        const { user_position_id } = req.params;
+        const { assessment_number, instructor, date, intensity, objective1, objective2, objective3, a, b, c, d, e, f, g, h, i, j, safety, is_simulator, remarks, } = req.body;
         // Create new assessment
         let query = `
       INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, objective2, objective3, a, b, c, d, e, f, g, h, i, j, safety, remarks, is_simulator)

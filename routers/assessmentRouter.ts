@@ -9,7 +9,7 @@ const {
 } = require("../controllers/assessmentController");
 
 router.get("/get/:user_position_id", auth, getAssessment);
-router.put("/create", auth, createAssessment);
+router.put("/create/:user_position_id", auth, createAssessment);
 router.patch("/update/:assessment_id", auth, updateAssessment);
 router.delete("/delete/:assessment_id", auth, deleteAssessment);
 

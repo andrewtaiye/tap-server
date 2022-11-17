@@ -52,14 +52,9 @@ const getUserPositions = async (req: UserPositionRequest, res: Response) => {
 
 const createUserPosition = async (req: UserPositionRequest, res: Response) => {
   try {
-    const {
-      user_id,
-      position,
-      start_date,
-      end_date,
-      approval_date,
-      is_revalidation,
-    } = req.body;
+    const { user_id } = req.params;
+    const { position, start_date, end_date, approval_date, is_revalidation } =
+      req.body;
 
     let query = `SELECT id FROM users WHERE id = '${user_id}';`;
     let result = await client.query(query);

@@ -50,7 +50,8 @@ const getUserPositions = (req, res) => __awaiter(void 0, void 0, void 0, functio
 });
 const createUserPosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { user_id, position, start_date, end_date, approval_date, is_revalidation, } = req.body;
+        const { user_id } = req.params;
+        const { position, start_date, end_date, approval_date, is_revalidation } = req.body;
         let query = `SELECT id FROM users WHERE id = '${user_id}';`;
         let result = yield client.query(query);
         // Check if user exists

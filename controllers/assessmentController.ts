@@ -42,8 +42,8 @@ const getAssessment = async (req: AssessmentRequest, res: Response) => {
 
 const createAssessment = async (req: AssessmentRequest, res: Response) => {
   try {
+    const { user_position_id } = req.params;
     const {
-      user_position_id,
       assessment_number,
       instructor,
       date,
