@@ -245,14 +245,14 @@ const seed = async (seedAll: boolean) => {
       `
       BEGIN;
           -- Insert User
-          INSERT INTO users (username, password, is_admin) VALUES ('user1', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', true);
+          INSERT INTO users (username, password, is_admin) VALUES ('admin', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', true);
   
           -- Insert Profile
           INSERT INTO profiles (
             user_id, rank, full_name, id_number, date_of_birth, date_accepted, reporting_date, cat, flight
           )
           VALUES (
-            (SELECT id FROM users WHERE username = 'user1'),
+            (SELECT id FROM users WHERE username = 'admin'),
             'CPT',
             'John Doe',
             '123456789',
@@ -266,7 +266,7 @@ const seed = async (seedAll: boolean) => {
           -- Insert Positions
           INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date)
           VALUES (
-            (SELECT id FROM users WHERE username = 'user1'),
+            (SELECT id FROM users WHERE username = 'admin'),
             'DEP',
             1400169600,
             1419436800,
@@ -275,7 +275,7 @@ const seed = async (seedAll: boolean) => {
   
           INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date)
           VALUES (
-            (SELECT id FROM users WHERE username = 'user1'),
+            (SELECT id FROM users WHERE username = 'admin'),
             'ISL',
             1423065600,
             1444924800,
@@ -284,7 +284,7 @@ const seed = async (seedAll: boolean) => {
   
           INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date)
           VALUES (
-            (SELECT id FROM users WHERE username = 'user1'),
+            (SELECT id FROM users WHERE username = 'admin'),
             'FIS',
             1452009600,
             null,
@@ -295,7 +295,7 @@ const seed = async (seedAll: boolean) => {
           INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, a, b, c, d, e, f, g, h, I, j, safety, remarks, is_simulator)
           VALUES (
             (SELECT id FROM user_positions WHERE user_id = (
-              SELECT id FROM users WHERE username = 'user1') AND position = 'DEP'
+              SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'
             ),
             1,
             'Jane Doe',
@@ -320,7 +320,7 @@ const seed = async (seedAll: boolean) => {
           INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, a, b, c, d, e, f, g, h, I, j, safety, remarks, is_simulator)
           VALUES (
             (SELECT id FROM user_positions WHERE user_id = (
-              SELECT id FROM users WHERE username = 'user1') AND position = 'DEP'
+              SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'
             ),
             2,
             'Jane Doe',
@@ -345,7 +345,7 @@ const seed = async (seedAll: boolean) => {
           INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, a, b, c, d, e, f, g, h, I, j, safety, remarks, is_simulator)
           VALUES (
             (SELECT id FROM user_positions WHERE user_id = (
-              SELECT id FROM users WHERE username = 'user1') AND position = 'DEP'
+              SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'
             ),
             3,
             'Jane Doe',
@@ -371,7 +371,7 @@ const seed = async (seedAll: boolean) => {
           INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, a, b, c, d, e, f, g, h, I, j, safety, remarks, is_simulator)
           VALUES (
             (SELECT id FROM user_positions WHERE user_id = (
-              SELECT id FROM users WHERE username = 'user1') AND position = 'ISL'
+              SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'
             ),
             1,
             'Jane Doe',
@@ -396,7 +396,7 @@ const seed = async (seedAll: boolean) => {
           INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, a, b, c, d, e, f, g, h, I, j, safety, remarks, is_simulator)
           VALUES (
             (SELECT id FROM user_positions WHERE user_id = (
-              SELECT id FROM users WHERE username = 'user1') AND position = 'ISL'
+              SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'
             ),
             2,
             'Jane Doe',
@@ -422,7 +422,7 @@ const seed = async (seedAll: boolean) => {
           INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, a, b, c, d, e, f, g, h, I, j, safety, remarks, is_simulator)
           VALUES (
             (SELECT id FROM user_positions WHERE user_id = (
-              SELECT id FROM users WHERE username = 'user1') AND position = 'FIS'
+              SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'
             ),
             1,
             'Jane Doe',
@@ -447,7 +447,7 @@ const seed = async (seedAll: boolean) => {
           INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, a, b, c, d, e, f, g, h, I, j, safety, remarks, is_simulator)
           VALUES (
             (SELECT id FROM user_positions WHERE user_id = (
-              SELECT id FROM users WHERE username = 'user1') AND position = 'FIS'
+              SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'
             ),
             2,
             'Jane Doe',
