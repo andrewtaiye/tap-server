@@ -267,7 +267,7 @@ const seed = (seedAll) => __awaiter(void 0, void 0, void 0, function* () {
             'S3'
           );
   
-          -- Insert Positions
+          -- Insert Positionsa
           INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date)
           VALUES (
             (SELECT id FROM users WHERE username = 'admin'),
