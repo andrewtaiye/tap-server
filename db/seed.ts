@@ -268,7 +268,7 @@ const seed = async (seedAll: boolean) => {
             'S3'
           );
   
-          -- Insert Positionsa
+          -- Insert Positions
           INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date)
           VALUES (
             (SELECT id FROM users WHERE username = 'admin'),
