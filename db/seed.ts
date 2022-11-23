@@ -1,13 +1,10 @@
 const client = require("./db");
-const bcrypt = require("bcrypt");
 
 const seed = async (seedAll: boolean) => {
-  let hashedPassword = await bcrypt.hash("123", 12);
-
   let query = `
     INSERT INTO ranks VALUES ('1');
     INSERT INTO flights VALUES ('1');
-    INSERT INTO cats VALUES ('1');
+    INSERT INTO cats VALUES ('1', false);
     INSERT INTO positions VALUES ('1');
 
     INSERT INTO users (username, password) VALUES ('1', '1');
@@ -94,16 +91,17 @@ const seed = async (seedAll: boolean) => {
           );
       
           CREATE TABLE IF NOT EXISTS positions (
-          positions char(3) NOT NULL PRIMARY KEY UNIQUE
+          position varchar(30) NOT NULL PRIMARY KEY UNIQUE
           );
           CREATE TABLE IF NOT EXISTS ranks (
-          ranks varchar(4) NOT NULL PRIMARY KEY UNIQUE
+          rank varchar(4) NOT NULL PRIMARY KEY UNIQUE
           );
           CREATE TABLE IF NOT EXISTS cats (
-          cats varchar(3) NOT NULL PRIMARY KEY UNIQUE
+          cat varchar(5) NOT NULL PRIMARY KEY UNIQUE,
+          is_upgrade boolean NOT NULL
           );
           CREATE TABLE IF NOT EXISTS flights (
-          flights varchar(15) NOT NULL PRIMARY KEY UNIQUE
+          flight varchar(15) NOT NULL PRIMARY KEY UNIQUE
           );
       
           CREATE TABLE IF NOT EXISTS profiles (
@@ -114,25 +112,25 @@ const seed = async (seedAll: boolean) => {
           date_of_birth int NOT NULL,
           date_accepted int NOT NULL,
           reporting_date int NOT NULL,
-          cat varchar(3),
+          cat varchar(5),
           flight varchar(15),
           CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users (id),
-          CONSTRAINT FK_rank FOREIGN KEY (rank) REFERENCES ranks (ranks) ON UPDATE CASCADE,
-          CONSTRAINT FK_cat FOREIGN KEY (cat) REFERENCES cats (cats) ON UPDATE CASCADE,
-          CONSTRAINT FK_flight FOREIGN KEY (flight) REFERENCES flights (flights) ON UPDATE CASCADE
+          CONSTRAINT FK_rank FOREIGN KEY (rank) REFERENCES ranks (rank) ON UPDATE CASCADE,
+          CONSTRAINT FK_cat FOREIGN KEY (cat) REFERENCES cats (cat) ON UPDATE CASCADE,
+          CONSTRAINT FK_flight FOREIGN KEY (flight) REFERENCES flights (flight) ON UPDATE CASCADE
           );
       
           CREATE TABLE IF NOT EXISTS user_positions (
           id uuid PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
           user_id uuid NOT NULL,
-          position char(3),
+          position varchar(30),
           start_date int NOT NULL,
           end_date int,
           approval_date int,
           is_revalidation boolean NOT NULL DEFAULT false,
           is_instructor boolean NOT NULL DEFAULT false,
           CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users (id),
-          CONSTRAINT FK_position FOREIGN KEY (position) REFERENCES positions (positions) ON UPDATE CASCADE
+          CONSTRAINT FK_position FOREIGN KEY (position) REFERENCES positions (position) ON UPDATE CASCADE
           );
       
           CREATE TABLE IF NOT EXISTS assessments (
@@ -186,8 +184,11 @@ const seed = async (seedAll: boolean) => {
       INSERT INTO tokens (id, type, parent_id) VALUES ('a3bc9288-ef05-4873-be4c-4b35436f852e', '1', 'a3bc9288-ef05-4873-be4c-4b35436f852e');
       DELETE FROM tokens WHERE id = 'a3bc9288-ef05-4873-be4c-4b35436f852e' AND type = '1' AND parent_id = 'a3bc9288-ef05-4873-be4c-4b35436f852e';
       `,
-      (err: Error, res: any) => {
-        if (err) throw err;
+      async (err: Error, res: any) => {
+        if (err) {
+          await client.query("ROLLBACK;");
+          throw err;
+        }
         console.log("Tables Created");
       }
     );
@@ -196,41 +197,45 @@ const seed = async (seedAll: boolean) => {
     await client.query(
       `
       BEGIN;
-          INSERT INTO ranks (ranks) VALUES ('2LT');
-          INSERT INTO ranks (ranks) VALUES ('LTA');
-          INSERT INTO ranks (ranks) VALUES ('CPT');
-          INSERT INTO ranks (ranks) VALUES ('MAJ');
-          INSERT INTO ranks (ranks) VALUES ('LTC');
-          INSERT INTO ranks (ranks) VALUES ('SLTC');
-          INSERT INTO ranks (ranks) VALUES ('COL');
-          INSERT INTO ranks (ranks) VALUES ('BG');
-          INSERT INTO ranks (ranks) VALUES ('MG');
-          INSERT INTO ranks (ranks) VALUES ('LG');
-          INSERT INTO cats (cats) VALUES ('A');
-          INSERT INTO cats (cats) VALUES ('B');
-          INSERT INTO cats (cats) VALUES ('C');
-          INSERT INTO cats (cats) VALUES ('D');
-          INSERT INTO cats (cats) VALUES ('CNX');
-          INSERT INTO flights (flights) VALUES ('HQ');
-          INSERT INTO flights (flights) VALUES ('S3');
-          INSERT INTO flights (flights) VALUES ('APP');
-          INSERT INTO flights (flights) VALUES ('AREA');
-          INSERT INTO flights (flights) VALUES ('OPS HUB');
-          INSERT INTO flights (flights) VALUES ('PARTICIPATION');
-          INSERT INTO flights (flights) VALUES ('TRAINING');
-          INSERT INTO flights (flights) VALUES ('CMS');
-          INSERT INTO positions (positions) VALUES ('CNX');
-          INSERT INTO positions (positions) VALUES ('FIS');
-          INSERT INTO positions (positions) VALUES ('DEP');
-          INSERT INTO positions (positions) VALUES ('ARR');
-          INSERT INTO positions (positions) VALUES ('TAP');
-          INSERT INTO positions (positions) VALUES ('TAC');
-          INSERT INTO positions (positions) VALUES ('PAP');
-          INSERT INTO positions (positions) VALUES ('PAC');
-          INSERT INTO positions (positions) VALUES ('ISL');
+          INSERT INTO ranks (rank) VALUES ('2LT');
+          INSERT INTO ranks (rank) VALUES ('LTA');
+          INSERT INTO ranks (rank) VALUES ('CPT');
+          INSERT INTO ranks (rank) VALUES ('MAJ');
+          INSERT INTO ranks (rank) VALUES ('LTC');
+          INSERT INTO ranks (rank) VALUES ('SLTC');
+          INSERT INTO ranks (rank) VALUES ('COL');
+          INSERT INTO ranks (rank) VALUES ('BG');
+          INSERT INTO ranks (rank) VALUES ('MG');
+          INSERT INTO ranks (rank) VALUES ('LG');
+          INSERT INTO cats (cat, is_upgrade) VALUES ('A', true);
+          INSERT INTO cats (cat, is_upgrade) VALUES ('B', true);
+          INSERT INTO cats (cat, is_upgrade) VALUES ('C', true);
+          INSERT INTO cats (cat, is_upgrade) VALUES ('D', false);
+          INSERT INTO cats (cat, is_upgrade) VALUES ('CNX', true);
+          INSERT INTO flights (flight) VALUES ('HQ');
+          INSERT INTO flights (flight) VALUES ('S3');
+          INSERT INTO flights (flight) VALUES ('APP');
+          INSERT INTO flights (flight) VALUES ('AREA');
+          INSERT INTO flights (flight) VALUES ('OPS HUB');
+          INSERT INTO flights (flight) VALUES ('PARTICIPATION');
+          INSERT INTO flights (flight) VALUES ('TRAINING');
+          INSERT INTO flights (flight) VALUES ('CMS');
+          INSERT INTO positions (position) VALUES ('CNX');
+          INSERT INTO positions (position) VALUES ('FIS');
+          INSERT INTO positions (position) VALUES ('DEP');
+          INSERT INTO positions (position) VALUES ('ARR');
+          INSERT INTO positions (position) VALUES ('TAP');
+          INSERT INTO positions (position) VALUES ('TAC');
+          INSERT INTO positions (position) VALUES ('PAP');
+          INSERT INTO positions (position) VALUES ('PAC');
+          INSERT INTO positions (position) VALUES ('ISL');
       COMMIT;
     `,
-      (err: Error, res: any) => {
+      async (err: Error, res: any) => {
+        if (err) {
+          await client.query("ROLLBACK;");
+          throw err;
+        }
         console.log("Inserted Enums");
       }
     );

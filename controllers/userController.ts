@@ -90,8 +90,10 @@ const login = async (req: UserRequest, res: Response) => {
       return;
     }
 
+    const user = result.rows[0];
+
     // Check if password matches
-    const match = await bcrypt.compare(password, result.rows[0].password);
+    const match = await bcrypt.compare(password, user.password);
     if (!match) {
       res
         .status(400)
@@ -100,18 +102,26 @@ const login = async (req: UserRequest, res: Response) => {
     }
 
     // Check if profile exists
-    let url =
-      process.env.REACT_APP_API_ENDPOINT + `profile/get/${result.rows[0].id}`;
+    let url = process.env.REACT_APP_API_ENDPOINT + `profile/get/${user.id}`;
     let response = await fetchCall(url);
 
     const payload = {
-      userId: result.rows[0].id,
-      is_admin: result.rows[0].is_admin,
+      userId: user.id,
+      is_admin: user.is_admin,
+      is_instructor: true,
       hasProfile: true,
     };
 
     if (response.status !== "ok") {
       payload.hasProfile = false;
+    }
+
+    // Check if user has a position where user is an instructor
+    query = `SELECT id FROM user_positions WHERE user_id = '${user.id}' AND is_instructor = true;`;
+    result = await client.query(query);
+
+    if (result.rowCount === 0) {
+      payload.is_instructor = false;
     }
 
     const accessId = uuidv4();
