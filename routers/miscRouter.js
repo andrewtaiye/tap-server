@@ -46,6 +46,7 @@ router.post("/refresh", (req, res) => __awaiter(void 0, void 0, void 0, function
         const payload = {
             userId: decoded.userId,
             is_admin: decoded.is_admin,
+            is_instructor: decoded.is_instructor,
             hasProfile: decoded.hasProfile,
         };
         const accessId = uuidv4();

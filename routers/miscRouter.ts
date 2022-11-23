@@ -39,6 +39,7 @@ router.post("/refresh", async (req, res) => {
     const payload = {
       userId: decoded.userId,
       is_admin: decoded.is_admin,
+      is_instructor: decoded.is_instructor,
       hasProfile: decoded.hasProfile,
     };
 
