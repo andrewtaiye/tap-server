@@ -456,8 +456,8 @@ const updateRank = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         // Update rank
         query = `
       UPDATE ranks
-      SET ranks = '${newRank}'
-      WHERE ranks = '${rank}';
+      SET rank = '${newRank}'
+      WHERE rank = '${rank}';
     `;
         yield client.query(query);
         const data = {};
@@ -489,8 +489,8 @@ const updatePosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
         // Update position
         query = `
       UPDATE positions
-      SET positions = '${newPosition}'
-      WHERE positions = '${position}';
+      SET position = '${newPosition}'
+      WHERE position = '${position}';
     `;
         yield client.query(query);
         const data = {};
@@ -524,8 +524,8 @@ const updateCat = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // Update cat
         query = `
       UPDATE cats
-      SET cats = '${newCat}'
-      WHERE cats = '${cat}';
+      SET cat = '${newCat}'
+      WHERE cat = '${cat}';
     `;
         yield client.query(query);
         const data = {};
@@ -557,8 +557,8 @@ const updateFlight = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         // Update flight
         query = `
       UPDATE flights
-      SET flights = '${newFlight}'
-      WHERE flights = '${flight}';
+      SET flight = '${newFlight}'
+      WHERE flight = '${flight}';
     `;
         yield client.query(query);
         const data = {};

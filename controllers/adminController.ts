@@ -543,8 +543,8 @@ const updateRank = async (req: AdminRequest, res: Response) => {
     // Update rank
     query = `
       UPDATE ranks
-      SET ranks = '${newRank}'
-      WHERE ranks = '${rank}';
+      SET rank = '${newRank}'
+      WHERE rank = '${rank}';
     `;
     await client.query(query);
 
@@ -583,8 +583,8 @@ const updatePosition = async (req: AdminRequest, res: Response) => {
     // Update position
     query = `
       UPDATE positions
-      SET positions = '${newPosition}'
-      WHERE positions = '${position}';
+      SET position = '${newPosition}'
+      WHERE position = '${position}';
     `;
     await client.query(query);
 
@@ -625,8 +625,8 @@ const updateCat = async (req: AdminRequest, res: Response) => {
     // Update cat
     query = `
       UPDATE cats
-      SET cats = '${newCat}'
-      WHERE cats = '${cat}';
+      SET cat = '${newCat}'
+      WHERE cat = '${cat}';
     `;
     await client.query(query);
 
@@ -665,8 +665,8 @@ const updateFlight = async (req: AdminRequest, res: Response) => {
     // Update flight
     query = `
       UPDATE flights
-      SET flights = '${newFlight}'
-      WHERE flights = '${flight}';
+      SET flight = '${newFlight}'
+      WHERE flight = '${flight}';
     `;
     await client.query(query);
 
