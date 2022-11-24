@@ -68,10 +68,10 @@ const seed = async (seedAll: boolean) => {
     DELETE FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = '1');
     DELETE FROM profiles WHERE USER_ID = (SELECT id FROM users WHERE username = '1');
     DELETE FROM users WHERE username = '1';
-    DELETE FROM positions WHERE positions = '1';
-    DELETE FROM cats WHERE cats = '1';
-    DELETE FROM flights WHERE flights = '1';
-    DELETE FROM ranks WHERE ranks = '1';
+    DELETE FROM positions WHERE position = '1';
+    DELETE FROM cats WHERE cat = '1';
+    DELETE FROM flights WHERE flight = '1';
+    DELETE FROM ranks WHERE rank = '1';
   `;
   await client.query(query, async (err: Error, res: any) => {
     if (!err) {

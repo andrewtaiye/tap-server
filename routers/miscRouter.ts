@@ -6,12 +6,12 @@ const { v4: uuidv4 } = require("uuid");
 
 router.get("/enum", async (req, res) => {
   try {
-    const enumTables = ["ranks", "flights", "cats", "positions"];
+    const enumTables = ["rank", "flight", "cat", "position"];
 
     let data: any = {};
 
     for (const table of enumTables) {
-      let query = `SELECT * FROM ${table} ORDER BY ${table};`;
+      let query = `SELECT ${table} FROM ${table}s ORDER BY ${table};`;
       let result = await client.query(query);
       const rowArray = result.rows;
 

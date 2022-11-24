@@ -670,7 +670,7 @@ const deleteRank = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
       SET rank = null
       WHERE rank = '${rank}';
 
-      DELETE FROM ranks WHERE ranks = '${rank}';
+      DELETE FROM ranks WHERE rank = '${rank}';
     `;
         yield client.query(query);
         const data = {};
@@ -704,7 +704,7 @@ const deletePosition = (req, res) => __awaiter(void 0, void 0, void 0, function*
       SET position = null
       WHERE position = '${position}';
 
-      DELETE FROM positions WHERE positions = '${position}';
+      DELETE FROM positions WHERE position = '${position}';
     `;
         yield client.query(query);
         const data = {};
@@ -740,7 +740,7 @@ const deleteCat = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
       SET cat = null
       WHERE cat = '${cat}';
 
-      DELETE FROM cats WHERE cats = '${cat}';
+      DELETE FROM cats WHERE cat = '${cat}';
     `;
         yield client.query(query);
         const data = {};
@@ -774,7 +774,7 @@ const deleteFlight = (req, res) => __awaiter(void 0, void 0, void 0, function* (
       SET flight = null
       WHERE flight = '${flight}';
 
-      DELETE FROM flights WHERE flights = '${flight}';
+      DELETE FROM flights WHERE flight = '${flight}';
     `;
         yield client.query(query);
         const data = {};
