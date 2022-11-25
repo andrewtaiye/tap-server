@@ -11,6 +11,7 @@ const userPositionRouter = require("./routers/userPositionRouter");
 const assessmentRouter = require("./routers/assessmentRouter");
 const miscRouter = require("./routers/miscRouter");
 const adminRouter = require("./routers/adminRouter");
+const instructorRouter = require("./routers/instructorRouter");
 
 app.use(cors());
 app.use(express.json());
@@ -22,6 +23,7 @@ app.use("/user_position", userPositionRouter);
 app.use("/assessment", assessmentRouter);
 app.use("/misc", miscRouter);
 app.use("/admin", adminRouter);
+app.use("/instructor", instructorRouter);
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
