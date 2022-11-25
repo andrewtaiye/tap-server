@@ -6,14 +6,15 @@ const seed = async (seedAll: boolean) => {
     INSERT INTO flights VALUES ('1');
     INSERT INTO cats VALUES ('1', false);
     INSERT INTO positions VALUES ('1');
+    INSERT INTO scenario_categories VALUES ('1');
 
-    INSERT INTO users (username, password) VALUES ('1', '1');
+    INSERT INTO users (id, username, password) VALUES ('a3bc9288-ef05-4873-be4c-4b35436f852e', '1', '1');
 
     INSERT INTO profiles (
       user_id, rank, full_name, id_number, date_of_birth, date_accepted, reporting_date, cat, flight
     )
     VALUES (
-      (SELECT id FROM users WHERE username = '1' AND password = '1'),
+      'a3bc9288-ef05-4873-be4c-4b35436f852e',
       '2LT',
       '1',
       '123456789',
@@ -24,20 +25,20 @@ const seed = async (seedAll: boolean) => {
       'HQ'
     );
 
-    INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date)
+    INSERT INTO user_positions (id, user_id, position, start_date, end_date, approval_date)
     VALUES (
-      (SELECT id FROM users WHERE username = '1'),
+      'a3bc9288-ef05-4873-be4c-4b35436f852e',
+      'a3bc9288-ef05-4873-be4c-4b35436f852e',
       'ARR',
       1,
       1,
       1
     );
 
-    INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, a, b, c, d, e, f, g, h, I, j, safety, remarks, is_simulator)
+    INSERT INTO assessments (id, user_position_id, assessment_number, instructor, date, intensity, objective1, a, b, c, d, e, f, g, h, I, j, safety, remarks, is_simulator)
     VALUES (
-      (SELECT id FROM user_positions WHERE user_id = (
-        SELECT id FROM users WHERE username = '1') AND position = 'ARR'
-      ),
+      'a3bc9288-ef05-4873-be4c-4b35436f852e',
+      'a3bc9288-ef05-4873-be4c-4b35436f852e',
       1,
       '1',
       1,
@@ -58,16 +59,44 @@ const seed = async (seedAll: boolean) => {
       false
     );
 
+    INSERT INTO scenarios (id, position, scenario_number, scenario_category, first_position_requirement, subsequent_position_requirement, revalidation_requirement)
+    VALUES (
+      'a3bc9288-ef05-4873-be4c-4b35436f852e',
+      'ARR',
+      1,
+      'BEGINNER',
+      1,
+      1,
+      1
+    );
+
+    INSERT INTO scenario_requirements (id, user_position_id, scenario_id, requirement, fulfilled)
+    VALUES (
+      'a3bc9288-ef05-4873-be4c-4b35436f852e',
+      'a3bc9288-ef05-4873-be4c-4b35436f852e',
+      'a3bc9288-ef05-4873-be4c-4b35436f852e',
+      1,
+      1
+    );
+
+    INSERT INTO assessment_scenarios (id, assessment_id, scenario_id)
+    VALUES (
+      'a3bc9288-ef05-4873-be4c-4b35436f852e',
+      'a3bc9288-ef05-4873-be4c-4b35436f852e',
+      'a3bc9288-ef05-4873-be4c-4b35436f852e'
+    );
+
     INSERT INTO tokens (id, type, parent_id) VALUES ('a3bc9288-ef05-4873-be4c-4b35436f852e', '1', 'a3bc9288-ef05-4873-be4c-4b35436f852e');
 
     DELETE FROM tokens WHERE id = 'a3bc9288-ef05-4873-be4c-4b35436f852e' AND type = '1' AND parent_id = 'a3bc9288-ef05-4873-be4c-4b35436f852e';
-    DELETE FROM assessments WHERE user_position_id = (
-      SELECT id FROM user_positions WHERE user_id = (
-        SELECT id FROM users WHERE username = '1') AND position = 'ARR'
-    );
-    DELETE FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = '1');
-    DELETE FROM profiles WHERE USER_ID = (SELECT id FROM users WHERE username = '1');
+    DELETE FROM assessment_scenarios WHERE id = 'a3bc9288-ef05-4873-be4c-4b35436f852e';
+    DELETE FROM scenario_requirements WHERE id = 'a3bc9288-ef05-4873-be4c-4b35436f852e';
+    DELETE FROM scenarios WHERE id = 'a3bc9288-ef05-4873-be4c-4b35436f852e';
+    DELETE FROM assessments WHERE id = 'a3bc9288-ef05-4873-be4c-4b35436f852e';
+    DELETE FROM user_positions WHERE id = 'a3bc9288-ef05-4873-be4c-4b35436f852e';
+    DELETE FROM profiles WHERE user_id = 'a3bc9288-ef05-4873-be4c-4b35436f852e';
     DELETE FROM users WHERE username = '1';
+    DELETE FROM scenario_categories WHERE scenario_category = '1';
     DELETE FROM positions WHERE position = '1';
     DELETE FROM cats WHERE cat = '1';
     DELETE FROM flights WHERE flight = '1';
@@ -78,87 +107,91 @@ const seed = async (seedAll: boolean) => {
       console.log("Tables already exist");
       return;
     }
+    console.log(err);
 
     // Set up of tables
     await client.query(
       `
       BEGIN;
           CREATE TABLE IF NOT EXISTS users (
-          id uuid PRIMARY KEY DEFAULT uuid_generate_v4() UNIQUE,
-          username varchar(20) NOT NULL UNIQUE,
-          password varchar(60) NOT NULL,
-          is_admin boolean NOT NULL DEFAULT false
+            id uuid PRIMARY KEY DEFAULT uuid_generate_v4() UNIQUE,
+            username varchar(20) NOT NULL UNIQUE,
+            password varchar(60) NOT NULL,
+            is_admin boolean NOT NULL DEFAULT false
           );
       
           CREATE TABLE IF NOT EXISTS positions (
-          position varchar(30) NOT NULL PRIMARY KEY UNIQUE
+            position varchar(30) NOT NULL PRIMARY KEY UNIQUE
           );
           CREATE TABLE IF NOT EXISTS ranks (
-          rank varchar(4) NOT NULL PRIMARY KEY UNIQUE
+            rank varchar(4) NOT NULL PRIMARY KEY UNIQUE
           );
           CREATE TABLE IF NOT EXISTS cats (
-          cat varchar(5) NOT NULL PRIMARY KEY UNIQUE,
-          is_upgrade boolean NOT NULL
+            cat varchar(5) NOT NULL PRIMARY KEY UNIQUE,
+            is_upgrade boolean NOT NULL
           );
           CREATE TABLE IF NOT EXISTS flights (
-          flight varchar(15) NOT NULL PRIMARY KEY UNIQUE
+            flight varchar(15) NOT NULL PRIMARY KEY UNIQUE
+          );
+          CREATE TABLE IF NOT EXISTS scenario_categories (
+            scenario_category varchar(15) NOT NULL PRIMARY KEY UNIQUE
           );
       
           CREATE TABLE IF NOT EXISTS profiles (
-          user_id uuid PRIMARY KEY UNIQUE,
-          rank varchar(4),
-          full_name varchar(50) NOT NULL,
-          id_number varchar(9) NOT NULL,
-          date_of_birth int NOT NULL,
-          date_accepted int NOT NULL,
-          reporting_date int NOT NULL,
-          cat varchar(5),
-          flight varchar(15),
-          CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users (id),
-          CONSTRAINT FK_rank FOREIGN KEY (rank) REFERENCES ranks (rank) ON UPDATE CASCADE,
-          CONSTRAINT FK_cat FOREIGN KEY (cat) REFERENCES cats (cat) ON UPDATE CASCADE,
-          CONSTRAINT FK_flight FOREIGN KEY (flight) REFERENCES flights (flight) ON UPDATE CASCADE
+            user_id uuid PRIMARY KEY UNIQUE,
+            rank varchar(4),
+            full_name varchar(50) NOT NULL,
+            id_number varchar(9) NOT NULL,
+            date_of_birth int NOT NULL,
+            date_accepted int NOT NULL,
+            reporting_date int NOT NULL,
+            cat varchar(5),
+            flight varchar(15),
+            CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users (id),
+            CONSTRAINT FK_rank FOREIGN KEY (rank) REFERENCES ranks (rank) ON UPDATE CASCADE,
+            CONSTRAINT FK_cat FOREIGN KEY (cat) REFERENCES cats (cat) ON UPDATE CASCADE,
+            CONSTRAINT FK_flight FOREIGN KEY (flight) REFERENCES flights (flight) ON UPDATE CASCADE
           );
       
           CREATE TABLE IF NOT EXISTS user_positions (
-          id uuid PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
-          user_id uuid NOT NULL,
-          position varchar(30),
-          start_date int NOT NULL,
-          end_date int,
-          approval_date int,
-          is_revalidation boolean NOT NULL DEFAULT false,
-          is_instructor boolean NOT NULL DEFAULT false,
-          CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users (id),
-          CONSTRAINT FK_position FOREIGN KEY (position) REFERENCES positions (position) ON UPDATE CASCADE
+            id uuid PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+            user_id uuid NOT NULL,
+            position varchar(30),
+            start_date int NOT NULL,
+            end_date int,
+            approval_date int,
+            is_revalidation boolean NOT NULL DEFAULT false,
+            is_instructor boolean NOT NULL DEFAULT false,
+            CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users (id),
+            CONSTRAINT FK_position FOREIGN KEY (position) REFERENCES positions (position) ON UPDATE CASCADE
           );
       
           CREATE TABLE IF NOT EXISTS assessments (
-          id uuid PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
-          user_position_id uuid NOT NULL,
-          assessment_number smallint NOT NULL,
-          instructor varchar(50) NOT NULL,
-          date int NOT NULL,
-          intensity smallint NOT NULL,
-          objective1 text NOT NULL,
-          objective2 text,
-          objective3 text,
-          a smallint NOT NULL,
-          b smallint NOT NULL,
-          c smallint NOT NULL,
-          d smallint NOT NULL,
-          e smallint NOT NULL,
-          f smallint NOT NULL,
-          g smallint NOT NULL,
-          h smallint NOT NULL,
-          i smallint NOT NULL,
-          j smallint NOT NULL,
-          safety boolean NOT NULL,
-          grade smallint GENERATED ALWAYS AS (a + b + c + d + e + f + g + h + i + j) STORED,
-          remarks text NOT NULL,
-          is_simulator boolean NOT NULL,
-          CONSTRAINT FK_user_position_id FOREIGN KEY (user_position_id) REFERENCES user_positions (id),
-          CONSTRAINT CHK_grades CHECK (
+            id uuid PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+            user_position_id uuid NOT NULL,
+            assessment_number smallint NOT NULL,
+            instructor varchar(50) NOT NULL,
+            date int NOT NULL,
+            intensity smallint NOT NULL,
+            objective1 text NOT NULL,
+            objective2 text,
+            objective3 text,
+            a smallint NOT NULL,
+            b smallint NOT NULL,
+            c smallint NOT NULL,
+            d smallint NOT NULL,
+            e smallint NOT NULL,
+            f smallint NOT NULL,
+            g smallint NOT NULL,
+            h smallint NOT NULL,
+            i smallint NOT NULL,
+            j smallint NOT NULL,
+            safety boolean NOT NULL,
+            grade smallint GENERATED ALWAYS AS (a + b + c + d + e + f + g + h + i + j) STORED,
+            remarks text NOT NULL,
+            is_simulator boolean NOT NULL,
+            CONSTRAINT FK_user_position_id FOREIGN KEY (user_position_id) REFERENCES user_positions (id),
+            CONSTRAINT CHK_grades CHECK (
               a > 0 AND a <= 10 AND
               b > 0 AND b <= 10 AND
               c > 0 AND c <= 10 AND
@@ -170,13 +203,48 @@ const seed = async (seedAll: boolean) => {
               i > 0 AND i <= 10 AND
               j > 0 AND j <= 10 AND
               grade > 0 AND grade <= 100
-          )
+            )
+          );
+
+          CREATE TABLE IF NOT EXISTS scenarios (
+            id uuid PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+            position varchar(30),
+            scenario_number smallint NOT NULL,
+            scenario_category varchar(15) NOT NULL,
+            first_position_requirement smallint NOT NULL,
+            subsequent_position_requirement smallint NOT NULL,
+            revalidation_requirement smallint NOT NULL,
+            first_position_live_requirement smallint,
+            subsequent_position_live_requirement smallint,
+            revalidation_live_requirement smallint,
+            CONSTRAINT FK_position FOREIGN KEY (position) REFERENCES positions (position) ON UPDATE CASCADE,
+            CONSTRAINT FK_scenario_category FOREIGN KEY (scenario_category) REFERENCES scenario_categories (scenario_category) ON UPDATE CASCADE
+          );
+
+          CREATE TABLE IF NOT EXISTS scenario_requirements (
+            id uuid PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+            user_position_id uuid NOT NULL,
+            scenario_id uuid NOT NULL,
+            requirement smallint NOT NULL,
+            fulfilled smallint NOT NULL,
+            live_requirement smallint,
+            live_fulfilled smallint,
+            CONSTRAINT FK_user_position_id FOREIGN KEY (user_position_id) REFERENCES user_positions (id),
+            CONSTRAINT FK_scenario_id FOREIGN KEY (scenario_id) REFERENCES scenarios (id)
+          );
+
+          CREATE TABLE IF NOT EXISTS assessment_scenarios (
+            id uuid PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+            assessment_id uuid NOT NULL,
+            scenario_id uuid NOT NULL,
+            CONSTRAINT FK_assessment_id FOREIGN KEY (assessment_id) REFERENCES assessments (id),
+            CONSTRAINT FK_scenario_id FOREIGN KEY (scenario_id) REFERENCES scenarios (id)
           );
       
           CREATE TABLE IF NOT EXISTS tokens (
-          id uuid PRIMARY KEY UNIQUE,
-          type varchar(7) NOT NULL,
-          parent_id uuid
+            id uuid PRIMARY KEY UNIQUE,
+            type varchar(7) NOT NULL,
+            parent_id uuid
           );
   
       COMMIT;
@@ -229,6 +297,9 @@ const seed = async (seedAll: boolean) => {
           INSERT INTO positions (position) VALUES ('PAP');
           INSERT INTO positions (position) VALUES ('PAC');
           INSERT INTO positions (position) VALUES ('ISL');
+          INSERT INTO scenario_categories (scenario_category) VALUES ('BEGINNER');
+          INSERT INTO scenario_categories (scenario_category) VALUES ('INTERMEDIATE');
+          INSERT INTO scenario_categories (scenario_category) VALUES ('ADVANCED');
       COMMIT;
     `,
       async (err: Error, res: any) => {
