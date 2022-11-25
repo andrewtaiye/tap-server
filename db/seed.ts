@@ -340,13 +340,15 @@ const seed = async (seedAll: boolean) => {
           );
   
           -- Insert Positions
-          INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date)
+          INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date, is_revalidation, is_instructor)
           VALUES (
             (SELECT id FROM users WHERE username = 'admin'),
             'DEP',
             1400169600,
             1419436800,
-            1419955200
+            1419955200,
+            true,
+            true
           );
   
           INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date)
