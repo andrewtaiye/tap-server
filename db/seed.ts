@@ -5,7 +5,7 @@ const seed = async (seedAll: boolean) => {
     INSERT INTO ranks VALUES ('1');
     INSERT INTO flights VALUES ('1');
     INSERT INTO cats VALUES ('1', false);
-    INSERT INTO positions VALUES ('1');
+    INSERT INTO positions VALUES ('1', 'APP');
     INSERT INTO scenario_categories VALUES ('1');
 
     INSERT INTO users (id, username, password) VALUES ('a3bc9288-ef05-4873-be4c-4b35436f852e', '1', '1');
@@ -121,7 +121,8 @@ const seed = async (seedAll: boolean) => {
           );
       
           CREATE TABLE IF NOT EXISTS positions (
-            position varchar(30) NOT NULL PRIMARY KEY UNIQUE
+            position varchar(30) NOT NULL PRIMARY KEY UNIQUE,
+            category varchar(4) NOT NULL
           );
           CREATE TABLE IF NOT EXISTS ranks (
             rank varchar(4) NOT NULL PRIMARY KEY UNIQUE
@@ -288,15 +289,15 @@ const seed = async (seedAll: boolean) => {
           INSERT INTO flights (flight) VALUES ('PARTICIPATION');
           INSERT INTO flights (flight) VALUES ('TRAINING');
           INSERT INTO flights (flight) VALUES ('CMS');
-          INSERT INTO positions (position) VALUES ('CNX');
-          INSERT INTO positions (position) VALUES ('FIS');
-          INSERT INTO positions (position) VALUES ('DEP');
-          INSERT INTO positions (position) VALUES ('ARR');
-          INSERT INTO positions (position) VALUES ('TAP');
-          INSERT INTO positions (position) VALUES ('TAC');
-          INSERT INTO positions (position) VALUES ('PAP');
-          INSERT INTO positions (position) VALUES ('PAC');
-          INSERT INTO positions (position) VALUES ('ISL');
+          INSERT INTO positions (position, category) VALUES ('CNX', 'CNX');
+          INSERT INTO positions (position, category) VALUES ('FIS', 'SUP');
+          INSERT INTO positions (position, category) VALUES ('DEP', 'AREA');
+          INSERT INTO positions (position, category) VALUES ('ARR', 'AREA');
+          INSERT INTO positions (position, category) VALUES ('TAP', 'APP');
+          INSERT INTO positions (position, category) VALUES ('TAC', 'SUP');
+          INSERT INTO positions (position, category) VALUES ('PAP', 'APP');
+          INSERT INTO positions (position, category) VALUES ('PAC', 'SUP');
+          INSERT INTO positions (position, category) VALUES ('ISL', 'APP');
           INSERT INTO scenario_categories (scenario_category) VALUES ('BEGINNER');
           INSERT INTO scenario_categories (scenario_category) VALUES ('INTERMEDIATE');
           INSERT INTO scenario_categories (scenario_category) VALUES ('ADVANCED');
