@@ -26,17 +26,12 @@ const getTrainees = async (req: InstructorRequest, res: Response) => {
 
     // Retrieve all trainees
     let query = `
-      WITH position_count AS (
-        SELECT user_id, COUNT(user_id) AS position_count
-        FROM user_positions
-        GROUP BY user_id
-      )
-      SELECT user_positions.id AS user_position_id, user_positions.user_id, user_positions.position, user_positions.start_date,
+      SELECT user_positions.id AS user_position_id, user_positions.user_id, user_positions.position, user_positions.start_date, user_positions.cat_upgrade,
         positions.category AS position_category,
-        position_count.position_count
+        profiles.rank, profiles.full_name
       FROM user_positions
       JOIN positions ON user_positions.position = positions.position
-      JOIN position_count ON user_positions.user_id = position_count.user_id
+      JOIN profiles ON user_positions.user_id = profiles.user_id
       WHERE end_date IS NULL AND approval_date IS NULL;
     `;
     let result = await client.query(query);
