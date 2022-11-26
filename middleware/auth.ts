@@ -34,7 +34,7 @@ const auth = async (req: JWTRequest, res: Response, next: NextFunction) => {
     if (result.rows[0].type === "access") {
       jwt.verify(token, process.env.ACCESS_SECRET);
       req.decoded = decoded;
-      console.log("Authenticated");
+      console.log(`User ID: ${decoded.userId} authenticated`);
       next();
       return;
     }
