@@ -163,8 +163,10 @@ const seed = async (seedAll: boolean) => {
             approval_date int,
             is_revalidation boolean NOT NULL DEFAULT false,
             is_instructor boolean NOT NULL DEFAULT false,
+            cat_upgrade varchar(5),
             CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users (id),
-            CONSTRAINT FK_position FOREIGN KEY (position) REFERENCES positions (position) ON UPDATE CASCADE
+            CONSTRAINT FK_position FOREIGN KEY (position) REFERENCES positions (position) ON UPDATE CASCADE,
+            CONSTRAINT FK_cat_upgrade FOREIGN KEY (cat_upgrade) REFERENCES cats (cat) ON UPDATE CASCADE
           );
       
           CREATE TABLE IF NOT EXISTS assessments (
@@ -341,7 +343,7 @@ const seed = async (seedAll: boolean) => {
           );
   
           -- Insert Positions
-          INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date, is_revalidation, is_instructor)
+          INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date, is_revalidation, is_instructor, cat_upgrade)
           VALUES (
             (SELECT id FROM users WHERE username = 'admin'),
             'DEP',
@@ -349,25 +351,25 @@ const seed = async (seedAll: boolean) => {
             1419436800,
             1419955200,
             true,
-            true
+            true,
+            'C'
           );
   
-          INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date)
+          INSERT INTO user_positions (user_id, position, start_date, end_date, cat_upgrade)
           VALUES (
             (SELECT id FROM users WHERE username = 'admin'),
             'ISL',
             1423065600,
             1444924800,
-            null
+            'B'
           );
   
-          INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date)
+          INSERT INTO user_positions (user_id, position, start_date, cat_upgrade)
           VALUES (
             (SELECT id FROM users WHERE username = 'admin'),
             'FIS',
             1452009600,
-            null,
-            null
+            'A'
           );
   
           -- Insert DEP Assessments
