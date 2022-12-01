@@ -17,13 +17,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use("/user", userRouter);
-app.use("/profile", profileRouter);
-app.use("/user_position", userPositionRouter);
-app.use("/assessment", assessmentRouter);
-app.use("/misc", miscRouter);
-app.use("/admin", adminRouter);
-app.use("/instructor", instructorRouter);
+app.use("/api/user", userRouter);
+app.use("/api/profile", profileRouter);
+app.use("/api/user_position", userPositionRouter);
+app.use("/api/assessment", assessmentRouter);
+app.use("/api/misc", miscRouter);
+app.use("/api/admin", adminRouter);
+app.use("/api/instructor", instructorRouter);
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
