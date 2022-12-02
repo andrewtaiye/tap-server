@@ -192,9 +192,37 @@ const deleteAssessment = async (req: AssessmentRequest, res: Response) => {
   }
 };
 
+const getScenarios = async (req: AssessmentRequest, res: Response) => {
+  try {
+    const { position } = req.params;
+
+    let query = `
+    SELECT scenario_number FROM scenarios WHERE position = '${position}';
+`;
+    let result = await client.query(query);
+
+    const scenario_count = result.rows;
+
+    const data: any = { scenario_count };
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("Retrieved Scenarios");
+    res.json({ status: "ok", message: "Retrieved Scenarios", data });
+  } catch (err: any) {
+    console.error(err.message);
+    res
+      .status(400)
+      .json({ status: "error", message: "Failed to delete assessment" });
+  }
+};
+
 module.exports = {
   getAssessment,
   createAssessment,
   updateAssessment,
   deleteAssessment,
+  getScenarios,
 };

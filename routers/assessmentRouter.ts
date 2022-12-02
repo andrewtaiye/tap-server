@@ -6,11 +6,13 @@ const {
   createAssessment,
   updateAssessment,
   deleteAssessment,
+  getScenarios,
 } = require("../controllers/assessmentController");
 
 router.get("/get/:user_position_id", auth, getAssessment);
 router.put("/create/:user_position_id", auth, createAssessment);
 router.patch("/update/:assessment_id", auth, updateAssessment);
 router.delete("/delete/:assessment_id", auth, deleteAssessment);
+router.get("/get/scenarios/:position", getScenarios);
 
 module.exports = router;
