@@ -53,8 +53,14 @@ const getUserPositions = async (req: UserPositionRequest, res: Response) => {
 const createUserPosition = async (req: UserPositionRequest, res: Response) => {
   try {
     const { user_id } = req.params;
-    const { position, start_date, end_date, approval_date, is_revalidation } =
-      req.body;
+    const {
+      position,
+      start_date,
+      end_date,
+      approval_date,
+      is_revalidation,
+      cat_upgrade,
+    } = req.body;
 
     let query = `SELECT id FROM users WHERE id = '${user_id}';`;
     let result = await client.query(query);
@@ -70,10 +76,12 @@ const createUserPosition = async (req: UserPositionRequest, res: Response) => {
 
     // Insert new position
     query = `
-      INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date, is_revalidation)
+      INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date, is_revalidation, cat_upgrade)
       VALUES ('${user_id}', '${position}', ${start_date},
       ${end_date ? end_date : "null"},
-      ${approval_date ? approval_date : "null"}, ${is_revalidation})
+      ${
+        approval_date ? approval_date : "null"
+      }, ${is_revalidation}, '${cat_upgrade}')
       RETURNING id;
     `;
     result = await client.query(query);
@@ -96,8 +104,14 @@ const createUserPosition = async (req: UserPositionRequest, res: Response) => {
 
 const updateUserPosition = async (req: UserPositionRequest, res: Response) => {
   try {
-    const { position, start_date, end_date, approval_date, is_revalidation } =
-      req.body;
+    const {
+      position,
+      start_date,
+      end_date,
+      approval_date,
+      is_revalidation,
+      cat_upgrade,
+    } = req.body;
     const { user_position_id } = req.params;
 
     // Check if user-position exists
@@ -115,7 +129,7 @@ const updateUserPosition = async (req: UserPositionRequest, res: Response) => {
     // Update position
     query = `
     UPDATE user_positions
-    SET position = '${position}', start_date = ${start_date}, end_date = ${end_date}, approval_date = ${approval_date}, is_revalidation = '${is_revalidation}'
+    SET position = '${position}', start_date = ${start_date}, end_date = ${end_date}, approval_date = ${approval_date}, is_revalidation = ${is_revalidation}, cat_upgrade = '${cat_upgrade}'
     WHERE id = '${user_position_id}';
     `;
     await client.query(query);
