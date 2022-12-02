@@ -87,7 +87,6 @@ const seed = async (seedAll: boolean) => {
     );
 
     INSERT INTO tokens (id, type, parent_id) VALUES ('a3bc9288-ef05-4873-be4c-4b35436f852e', '1', 'a3bc9288-ef05-4873-be4c-4b35436f852e');
-
     DELETE FROM tokens WHERE id = 'a3bc9288-ef05-4873-be4c-4b35436f852e' AND type = '1' AND parent_id = 'a3bc9288-ef05-4873-be4c-4b35436f852e';
     DELETE FROM assessment_scenarios WHERE id = 'a3bc9288-ef05-4873-be4c-4b35436f852e';
     DELETE FROM scenario_requirements WHERE id = 'a3bc9288-ef05-4873-be4c-4b35436f852e';
@@ -303,7 +302,6 @@ const seed = async (seedAll: boolean) => {
           INSERT INTO scenario_categories (scenario_category) VALUES ('BEGINNER');
           INSERT INTO scenario_categories (scenario_category) VALUES ('INTERMEDIATE');
           INSERT INTO scenario_categories (scenario_category) VALUES ('ADVANCED');
-
           -- Insert Scenarios
           INSERT INTO scenarios
           (position, scenario_number, scenario_category, first_position_requirement, subsequent_position_requirement, revalidation_requirement, first_position_live_requirement, subsequent_position_live_requirement, revalidation_live_requirement)
@@ -1417,7 +1415,6 @@ const seed = async (seedAll: boolean) => {
           ((SELECT id FROM assessments WHERE user_position_id = (SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'november') AND position = 'FIS') AND assessment_number = 10), (SELECT id FROM scenarios WHERE position = 'FIS' AND scenario_number = 9))
           ;
 
-
           -- Update Scenario Requirements
           UPDATE scenario_requirements SET fulfilled = fulfilled + 1, live_fulfilled = live_fulfilled + 0 WHERE id = (SELECT id FROM scenario_requirements WHERE user_position_id = (SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS') AND scenario_id = (SELECT id FROM scenarios WHERE position = 'FIS' AND scenario_number = 1));
           UPDATE scenario_requirements SET fulfilled = fulfilled + 1, live_fulfilled = live_fulfilled + 0 WHERE id = (SELECT id FROM scenario_requirements WHERE user_position_id = (SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS') AND scenario_id = (SELECT id FROM scenarios WHERE position = 'FIS' AND scenario_number = 3));
@@ -1740,22 +1737,19 @@ const seed = async (seedAll: boolean) => {
           UPDATE scenario_requirements SET fulfilled = fulfilled + 1, live_fulfilled = live_fulfilled + 1 WHERE id = (SELECT id FROM scenario_requirements WHERE user_position_id = (SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'november') AND position = 'FIS') AND scenario_id = (SELECT id FROM scenarios WHERE position = 'FIS' AND scenario_number = 7));
           UPDATE scenario_requirements SET fulfilled = fulfilled + 1, live_fulfilled = live_fulfilled + 0 WHERE id = (SELECT id FROM scenario_requirements WHERE user_position_id = (SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'november') AND position = 'FIS') AND scenario_id = (SELECT id FROM scenarios WHERE position = 'FIS' AND scenario_number = 10));
           UPDATE scenario_requirements SET fulfilled = fulfilled + 1, live_fulfilled = live_fulfilled + 0 WHERE id = (SELECT id FROM scenario_requirements WHERE user_position_id = (SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'november') AND position = 'FIS') AND scenario_id = (SELECT id FROM scenarios WHERE position = 'FIS' AND scenario_number = 1));
-
       COMMIT;
     `,
       async (err: Error, res: any) => {
         if (err) {
-          // await client.query("ROLLBACK;");
+          await client.query("ROLLBACK;");
           throw err;
         }
         console.log("Inserted Seed");
       }
     );
-
     console.log("Seed All - Seeding Completed");
   });
 };
 
 export {};
-
 module.exports = seed;
