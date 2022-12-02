@@ -323,240 +323,201 @@ const seed = async (seedAll: boolean) => {
     await client.query(
       `
       BEGIN;
-          -- Insert User
-          INSERT INTO users (username, password, is_admin) VALUES ('admin', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', true);
-  
-          -- Insert Profile
-          INSERT INTO profiles (
-            user_id, rank, full_name, id_number, date_of_birth, date_accepted, reporting_date, cat, flight
-          )
-          VALUES (
-            (SELECT id FROM users WHERE username = 'admin'),
-            'CPT',
-            'John Doe',
-            '123456789',
-            800553600,
-            1368633600,
-            1381852800,
-            'B',
-            'S3'
-          );
-  
+          -- Insert Users
+          INSERT INTO users (username, password, is_admin)
+          VALUES
+          ('admin', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', true),
+          ('instructor', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', false),
+          ('alpha', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', false),
+          ('bravo', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', false),
+          ('charlie', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', false),
+          ('delta', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', false),
+          ('echo', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', false),
+          ('foxtrot', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', false),
+          ('golf', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', false),
+          ('hotel', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', false),
+          ('india', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', false),
+          ('juliet', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', false),
+          ('kilo', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', false),
+          ('lima', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', false),
+          ('mike', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', false),
+          ('november', '$2b$12$43OLPsbg2jkSzd5yKWQEnucV0rSN0Zsf2hozra7RWzuvGqn2zjyxa', false);
+
+          -- Insert Profiles
+          INSERT INTO profiles (user_id, rank, full_name, id_number, date_of_birth, date_accepted, reporting_date, cat, flight)
+          VALUES
+          ((SELECT id FROM users WHERE username = 'admin'), 'CPT', 'admin', '123456789', 800553600, 1368633600, 1381852800, 'A', 'HQ'),
+          ((SELECT id FROM users WHERE username = 'instructor'), 'CPT', 'instructor', '123456789', 800553600, 1368633600, 1381852800, 'A', 'HQ'),
+          ((SELECT id FROM users WHERE username = 'alpha'), '2LT', 'alpha', '123456789', 800553600, 1368633600, 1381852800, 'D', 'HQ'),
+          ((SELECT id FROM users WHERE username = 'bravo'), '2LT', 'bravo', '123456789', 800553600, 1368633600, 1381852800, 'D', 'HQ'),
+          ((SELECT id FROM users WHERE username = 'charlie'), '2LT', 'charlie', '123456789', 800553600, 1368633600, 1381852800, 'D', 'HQ'),
+          ((SELECT id FROM users WHERE username = 'delta'), '2LT', 'delta', '123456789', 800553600, 1368633600, 1381852800, 'D', 'HQ'),
+          ((SELECT id FROM users WHERE username = 'echo'), '2LT', 'echo', '123456789', 800553600, 1368633600, 1381852800, 'D', 'HQ'),
+          ((SELECT id FROM users WHERE username = 'foxtrot'), '2LT', 'foxtrot', '123456789', 800553600, 1368633600, 1381852800, 'D', 'HQ'),
+          ((SELECT id FROM users WHERE username = 'golf'), '2LT', 'golf', '123456789', 800553600, 1368633600, 1381852800, 'D', 'HQ'),
+          ((SELECT id FROM users WHERE username = 'hotel'), '2LT', 'hotel', '123456789', 800553600, 1368633600, 1381852800, 'C', 'HQ'),
+          ((SELECT id FROM users WHERE username = 'india'), '2LT', 'india', '123456789', 800553600, 1368633600, 1381852800, 'C', 'HQ'),
+          ((SELECT id FROM users WHERE username = 'juliet'), '2LT', 'juliet', '123456789', 800553600, 1368633600, 1381852800, 'C', 'HQ'),
+          ((SELECT id FROM users WHERE username = 'kilo'), '2LT', 'kilo', '123456789', 800553600, 1368633600, 1381852800, 'C', 'HQ'),
+          ((SELECT id FROM users WHERE username = 'lima'), '2LT', 'lima', '123456789', 800553600, 1368633600, 1381852800, 'B', 'HQ'),
+          ((SELECT id FROM users WHERE username = 'mike'), '2LT', 'mike', '123456789', 800553600, 1368633600, 1381852800, 'B', 'HQ'),
+          ((SELECT id FROM users WHERE username = 'november'), '2LT', 'november', '123456789', 800553600, 1368633600, 1381852800, 'B', 'HQ');
+
           -- Insert Positions
           INSERT INTO user_positions (user_id, position, start_date, end_date, approval_date, is_revalidation, is_instructor, cat_upgrade)
-          VALUES (
-            (SELECT id FROM users WHERE username = 'admin'),
-            'DEP',
-            1400169600,
-            1419436800,
-            1419955200,
-            true,
-            true,
-            'C'
-          );
+          VALUES
+          ((SELECT id FROM users WHERE username = 'admin'), 'DEP', 1400169600, 1419436800, 1419955200, true, true, 'C'),
+          ((SELECT id FROM users WHERE username = 'admin'), 'ISL', 1400169600, 1419436800, null, false, false, 'B'),
+          ((SELECT id FROM users WHERE username = 'admin'), 'FIS', 1400169600, null, null, false, false, 'A'),
+          ((SELECT id FROM users WHERE username = 'instructor'), 'PAP', 1400169600, 1419436800, 1419955200, false, true, 'C'),
+          ((SELECT id FROM users WHERE username = 'instructor'), 'DEP', 1400169600, 1419436800, 1419955200, false, true, 'B'),
+          ((SELECT id FROM users WHERE username = 'instructor'), 'ISL', 1400169600, 1419436800, 1419955200, false, true, null),
+          ((SELECT id FROM users WHERE username = 'instructor'), 'PAC', 1400169600, 1419436800, 1419955200, false, true, 'A'),
+          ((SELECT id FROM users WHERE username = 'instructor'), 'TAP', 1400169600, 1419436800, 1419955200, false, true, null),
+          ((SELECT id FROM users WHERE username = 'instructor'), 'ARR', 1400169600, 1419436800, 1419955200, false, true, null),
+          ((SELECT id FROM users WHERE username = 'instructor'), 'TAC', 1400169600, 1419436800, 1419955200, false, true, null),
+          ((SELECT id FROM users WHERE username = 'instructor'), 'FIS', 1400169600, 1419436800, 1419955200, false, true, null),
+          ((SELECT id FROM users WHERE username = 'alpha'), 'DEP', 1400169600, null, null, false, false, 'C'),
+          ((SELECT id FROM users WHERE username = 'bravo'), 'DEP', 1400169600, null, null, false, false, 'C'),
+          ((SELECT id FROM users WHERE username = 'charlie'), 'ARR', 1400169600, null, null, false, false, 'C'),
+          ((SELECT id FROM users WHERE username = 'delta'), 'ARR', 1400169600, null, null, false, false, 'C'),
+          ((SELECT id FROM users WHERE username = 'echo'), 'PAP', 1400169600, null, null, false, false, 'C'),
+          ((SELECT id FROM users WHERE username = 'foxtrot'), 'PAP', 1400169600, null, null, false, false, 'C'),
+          ((SELECT id FROM users WHERE username = 'golf'), 'TAP', 1400169600, null, null, false, false, 'C'),
+          ((SELECT id FROM users WHERE username = 'hotel'), 'TAP', 1400169600, null, null, false, false, 'B'),
+          ((SELECT id FROM users WHERE username = 'india'), 'PAP', 1400169600, null, null, false, false, 'B'),
+          ((SELECT id FROM users WHERE username = 'juliet'), 'ARR', 1400169600, null, null, false, false, 'B'),
+          ((SELECT id FROM users WHERE username = 'kilo'), 'DEP', 1400169600, null, null, false, false, 'B'),
+          ((SELECT id FROM users WHERE username = 'lima'), 'TAC', 1400169600, null, null, false, false, 'A'),
+          ((SELECT id FROM users WHERE username = 'mike'), 'PAC', 1400169600, null, null, false, false, 'A'), ((SELECT id FROM users WHERE username = 'november'), 'FIS', 1400169600, null, null, false, false, 'A');
   
-          INSERT INTO user_positions (user_id, position, start_date, end_date, cat_upgrade)
-          VALUES (
-            (SELECT id FROM users WHERE username = 'admin'),
-            'ISL',
-            1423065600,
-            1444924800,
-            'B'
-          );
-  
-          INSERT INTO user_positions (user_id, position, start_date, cat_upgrade)
-          VALUES (
-            (SELECT id FROM users WHERE username = 'admin'),
-            'FIS',
-            1452009600,
-            'A'
-          );
-  
-          -- Insert DEP Assessments
+          -- Insert Assessments
           INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, a, b, c, d, e, f, g, h, I, j, safety, remarks, is_simulator)
-          VALUES (
-            (SELECT id FROM user_positions WHERE user_id = (
-              SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'
-            ),
-            1,
-            'Jane Doe',
-            1400169600,
-            4,
-            'To do it',
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            true,
-            'Needs more training',
-            false
-          );
-  
-          INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, a, b, c, d, e, f, g, h, I, j, safety, remarks, is_simulator)
-          VALUES (
-            (SELECT id FROM user_positions WHERE user_id = (
-              SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'
-            ),
-            2,
-            'Jane Doe',
-            1400169600,
-            3,
-            'To do it',
-            5,
-            6,
-            5,
-            6,
-            5,
-            4,
-            4,
-            5,
-            7,
-            5,
-            true,
-            'Needs more training',
-            false
-          );
-  
-          INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, a, b, c, d, e, f, g, h, I, j, safety, remarks, is_simulator)
-          VALUES (
-            (SELECT id FROM user_positions WHERE user_id = (
-              SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'
-            ),
-            3,
-            'Jane Doe',
-            1400169600,
-            4,
-            'To do it',
-            5,
-            4,
-            5,
-            4,
-            5,
-            4,
-            4,
-            5,
-            5,
-            5,
-            false,
-            'Needs more training',
-            false
-          );
-  
-          -- Insert ISL Assessments
-          INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, a, b, c, d, e, f, g, h, I, j, safety, remarks, is_simulator)
-          VALUES (
-            (SELECT id FROM user_positions WHERE user_id = (
-              SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'
-            ),
-            1,
-            'Jane Doe',
-            1423065600,
-            4,
-            'To do it',
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            true,
-            'Needs more training',
-            false
-          );
-  
-          INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, a, b, c, d, e, f, g, h, I, j, safety, remarks, is_simulator)
-          VALUES (
-            (SELECT id FROM user_positions WHERE user_id = (
-              SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'
-            ),
-            2,
-            'Jane Doe',
-            1423065600,
-            3,
-            'To do it',
-            5,
-            6,
-            5,
-            6,
-            5,
-            4,
-            4,
-            5,
-            7,
-            5,
-            true,
-            'Needs more training',
-            false
-          );
-  
-          -- Insert FIS Assessments
-          INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, a, b, c, d, e, f, g, h, I, j, safety, remarks, is_simulator)
-          VALUES (
-            (SELECT id FROM user_positions WHERE user_id = (
-              SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'
-            ),
-            1,
-            'Jane Doe',
-            1452009600,
-            4,
-            'To do it',
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            true,
-            'Needs more training',
-            false
-          );
-  
-          INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, a, b, c, d, e, f, g, h, I, j, safety, remarks, is_simulator)
-          VALUES (
-            (SELECT id FROM user_positions WHERE user_id = (
-              SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'
-            ),
-            2,
-            'Jane Doe',
-            1452009600,
-            3,
-            'To do it',
-            5,
-            6,
-            5,
-            6,
-            5,
-            4,
-            4,
-            5,
-            7,
-            5,
-            true,
-            'Last Seed Entry',
-            false
-          );
-  
-      COMMIT;
-  
-      SELECT id FROM assessments WHERE remarks = 'Last Seed Entry';
+          VALUES
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 1, 'watson toh', 1400169600, 4, 'train', 4, 9, 5, 5, 9, 4, 3, 5, 4, 9, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 2, 'watson toh', 1400169600, 4, 'train', 1, 6, 4, 5, 4, 8, 1, 5, 8, 9, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 3, 'watson toh', 1400169600, 4, 'train', 7, 6, 7, 6, 7, 3, 4, 10, 8, 1, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 4, 'watson toh', 1400169600, 4, 'train', 10, 8, 1, 8, 8, 4, 5, 6, 5, 3, true, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 5, 'watson toh', 1400169600, 4, 'train', 4, 5, 3, 10, 5, 6, 2, 6, 4, 9, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 6, 'watson toh', 1400169600, 4, 'train', 4, 2, 3, 10, 10, 9, 6, 7, 4, 3, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 7, 'watson toh', 1400169600, 4, 'train', 6, 1, 4, 10, 10, 6, 6, 2, 3, 4, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 8, 'watson toh', 1400169600, 4, 'train', 3, 10, 5, 6, 10, 5, 7, 10, 2, 8, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 9, 'watson toh', 1400169600, 4, 'train', 10, 1, 2, 10, 1, 6, 7, 3, 7, 8, false, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 10, 'watson toh', 1400169600, 4, 'train', 1, 5, 5, 8, 7, 6, 2, 8, 5, 8, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 11, 'watson toh', 1400169600, 4, 'train', 9, 3, 3, 10, 10, 5, 7, 6, 3, 6, true, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 12, 'watson toh', 1400169600, 4, 'train', 2, 10, 5, 10, 5, 6, 6, 3, 3, 1, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 13, 'watson toh', 1400169600, 4, 'train', 3, 7, 5, 3, 10, 2, 6, 8, 6, 9, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 14, 'watson toh', 1400169600, 4, 'train', 9, 9, 1, 7, 1, 2, 10, 4, 9, 7, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 15, 'watson toh', 1400169600, 4, 'train', 4, 9, 7, 9, 5, 7, 2, 3, 2, 1, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 16, 'watson toh', 1400169600, 4, 'train', 5, 2, 1, 2, 8, 6, 4, 4, 3, 3, true, 'bad', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 17, 'watson toh', 1400169600, 4, 'train', 6, 6, 10, 10, 1, 4, 8, 10, 3, 4, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 18, 'watson toh', 1400169600, 4, 'train', 9, 1, 7, 4, 10, 1, 3, 8, 9, 1, true, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 19, 'watson toh', 1400169600, 4, 'train', 10, 2, 4, 3, 3, 7, 5, 8, 10, 5, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 20, 'watson toh', 1400169600, 4, 'train', 8, 7, 9, 1, 3, 7, 8, 1, 6, 4, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 21, 'watson toh', 1400169600, 4, 'train', 5, 1, 5, 6, 7, 9, 5, 10, 8, 9, true, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 22, 'watson toh', 1400169600, 4, 'train', 9, 1, 7, 8, 7, 10, 7, 3, 5, 3, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 23, 'watson toh', 1400169600, 4, 'train', 10, 2, 6, 5, 9, 3, 10, 3, 3, 6, false, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 24, 'watson toh', 1400169600, 4, 'train', 4, 9, 3, 10, 7, 5, 9, 1, 3, 1, true, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 25, 'watson toh', 1400169600, 4, 'train', 4, 5, 10, 9, 8, 4, 8, 6, 4, 2, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 26, 'watson toh', 1400169600, 4, 'train', 5, 5, 1, 1, 10, 3, 5, 3, 8, 2, true, 'bad', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 27, 'watson toh', 1400169600, 4, 'train', 6, 5, 2, 5, 7, 4, 5, 2, 10, 3, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 28, 'watson toh', 1400169600, 4, 'train', 1, 3, 6, 3, 6, 6, 9, 2, 2, 8, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 29, 'watson toh', 1400169600, 4, 'train', 4, 5, 7, 10, 4, 6, 9, 1, 8, 5, false, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 30, 'watson toh', 1400169600, 4, 'train', 3, 5, 5, 10, 9, 4, 10, 7, 5, 8, true, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 31, 'watson toh', 1400169600, 4, 'train', 6, 6, 8, 5, 1, 10, 4, 1, 8, 4, false, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 32, 'watson toh', 1400169600, 4, 'train', 5, 8, 5, 7, 6, 2, 8, 3, 9, 7, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 33, 'watson toh', 1400169600, 4, 'train', 10, 4, 1, 9, 3, 8, 6, 4, 10, 4, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 34, 'watson toh', 1400169600, 4, 'train', 5, 5, 1, 9, 6, 2, 10, 1, 6, 4, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 35, 'watson toh', 1400169600, 4, 'train', 3, 3, 6, 10, 2, 4, 7, 9, 4, 7, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 36, 'watson toh', 1400169600, 4, 'train', 8, 3, 4, 6, 6, 9, 4, 8, 6, 4, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 37, 'watson toh', 1400169600, 4, 'train', 8, 5, 5, 10, 5, 7, 10, 4, 5, 5, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 38, 'watson toh', 1400169600, 4, 'train', 7, 6, 4, 10, 5, 4, 8, 2, 5, 5, true, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 39, 'watson toh', 1400169600, 4, 'train', 8, 3, 7, 2, 8, 1, 3, 2, 8, 7, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 40, 'watson toh', 1400169600, 4, 'train', 7, 5, 1, 5, 1, 5, 10, 9, 10, 6, true, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 41, 'watson toh', 1400169600, 4, 'train', 7, 3, 10, 10, 3, 6, 6, 1, 6, 3, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 42, 'watson toh', 1400169600, 4, 'train', 5, 6, 7, 8, 4, 6, 2, 10, 9, 8, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 43, 'watson toh', 1400169600, 4, 'train', 3, 7, 1, 10, 4, 2, 1, 10, 1, 6, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 44, 'watson toh', 1400169600, 4, 'train', 3, 6, 6, 6, 7, 5, 10, 4, 2, 7, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 45, 'watson toh', 1400169600, 4, 'train', 6, 3, 4, 10, 4, 4, 7, 8, 10, 8, true, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 46, 'watson toh', 1400169600, 4, 'train', 5, 3, 6, 2, 4, 1, 10, 5, 3, 6, false, 'bad', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 47, 'watson toh', 1400169600, 4, 'train', 2, 9, 6, 7, 2, 5, 4, 10, 6, 3, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 48, 'watson toh', 1400169600, 4, 'train', 2, 4, 8, 3, 6, 6, 5, 9, 2, 5, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 49, 'watson toh', 1400169600, 4, 'train', 6, 7, 10, 7, 6, 5, 2, 8, 8, 9, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'DEP'), 50, 'watson toh', 1400169600, 4, 'train', 4, 8, 9, 8, 1, 1, 3, 2, 5, 4, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 1, 'watson toh', 1400169600, 4, 'train', 7, 7, 3, 2, 10, 10, 1, 2, 1, 1, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 2, 'watson toh', 1400169600, 4, 'train', 9, 5, 10, 9, 10, 4, 3, 4, 10, 6, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 3, 'watson toh', 1400169600, 4, 'train', 6, 3, 4, 7, 3, 5, 7, 5, 4, 5, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 4, 'watson toh', 1400169600, 4, 'train', 4, 9, 1, 10, 1, 7, 3, 3, 4, 8, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 5, 'watson toh', 1400169600, 4, 'train', 3, 8, 4, 2, 1, 9, 9, 7, 10, 4, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 6, 'watson toh', 1400169600, 4, 'train', 4, 9, 2, 8, 7, 2, 5, 1, 7, 9, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 7, 'watson toh', 1400169600, 4, 'train', 3, 4, 10, 5, 3, 8, 7, 2, 7, 5, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 8, 'watson toh', 1400169600, 4, 'train', 6, 9, 10, 1, 1, 3, 4, 4, 8, 2, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 9, 'watson toh', 1400169600, 4, 'train', 10, 3, 10, 8, 9, 1, 4, 5, 10, 3, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 10, 'watson toh', 1400169600, 4, 'train', 3, 6, 8, 2, 10, 6, 7, 7, 1, 2, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 11, 'watson toh', 1400169600, 4, 'train', 9, 10, 6, 4, 3, 1, 3, 6, 1, 5, false, 'bad', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 12, 'watson toh', 1400169600, 4, 'train', 1, 6, 4, 6, 10, 8, 7, 4, 8, 6, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 13, 'watson toh', 1400169600, 4, 'train', 9, 2, 1, 10, 8, 2, 6, 3, 9, 7, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 14, 'watson toh', 1400169600, 4, 'train', 5, 7, 4, 2, 1, 4, 9, 3, 5, 7, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 15, 'watson toh', 1400169600, 4, 'train', 6, 8, 7, 5, 2, 1, 8, 10, 9, 6, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 16, 'watson toh', 1400169600, 4, 'train', 6, 9, 4, 1, 9, 6, 10, 4, 2, 9, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 17, 'watson toh', 1400169600, 4, 'train', 7, 2, 7, 4, 10, 9, 9, 5, 2, 8, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 18, 'watson toh', 1400169600, 4, 'train', 5, 1, 1, 1, 2, 8, 8, 9, 4, 6, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 19, 'watson toh', 1400169600, 4, 'train', 2, 1, 1, 3, 8, 1, 7, 3, 3, 8, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 20, 'watson toh', 1400169600, 4, 'train', 5, 8, 4, 3, 2, 3, 2, 4, 7, 4, true, 'bad', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 21, 'watson toh', 1400169600, 4, 'train', 8, 8, 5, 7, 1, 9, 10, 10, 1, 9, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 22, 'watson toh', 1400169600, 4, 'train', 9, 3, 8, 4, 10, 2, 5, 2, 6, 9, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 23, 'watson toh', 1400169600, 4, 'train', 6, 1, 3, 8, 1, 6, 1, 2, 2, 1, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 24, 'watson toh', 1400169600, 4, 'train', 10, 10, 8, 6, 7, 6, 10, 4, 4, 9, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 25, 'watson toh', 1400169600, 4, 'train', 3, 6, 10, 3, 4, 4, 7, 3, 8, 1, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 26, 'watson toh', 1400169600, 4, 'train', 10, 3, 3, 10, 3, 1, 8, 1, 2, 5, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 27, 'watson toh', 1400169600, 4, 'train', 3, 6, 3, 9, 4, 9, 10, 2, 4, 7, true, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 28, 'watson toh', 1400169600, 4, 'train', 10, 9, 5, 7, 3, 3, 4, 4, 9, 9, false, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 29, 'watson toh', 1400169600, 4, 'train', 5, 7, 7, 9, 5, 9, 2, 6, 1, 10, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 30, 'watson toh', 1400169600, 4, 'train', 6, 10, 8, 7, 2, 10, 6, 6, 8, 7, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 31, 'watson toh', 1400169600, 4, 'train', 2, 9, 6, 10, 9, 7, 3, 4, 3, 8, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 32, 'watson toh', 1400169600, 4, 'train', 9, 4, 9, 6, 7, 7, 10, 8, 8, 3, true, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 33, 'watson toh', 1400169600, 4, 'train', 10, 3, 2, 6, 4, 6, 3, 7, 1, 6, true, 'bad', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 34, 'watson toh', 1400169600, 4, 'train', 6, 2, 10, 7, 6, 2, 5, 2, 6, 10, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 35, 'watson toh', 1400169600, 4, 'train', 6, 4, 7, 4, 5, 9, 2, 3, 9, 7, true, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 36, 'watson toh', 1400169600, 4, 'train', 10, 10, 3, 7, 4, 3, 3, 1, 6, 3, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 37, 'watson toh', 1400169600, 4, 'train', 3, 4, 8, 4, 5, 5, 6, 5, 8, 3, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 38, 'watson toh', 1400169600, 4, 'train', 9, 9, 10, 8, 2, 9, 9, 2, 8, 3, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 39, 'watson toh', 1400169600, 4, 'train', 1, 3, 8, 3, 4, 8, 4, 6, 4, 2, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'ISL'), 40, 'watson toh', 1400169600, 4, 'train', 3, 10, 9, 6, 10, 6, 8, 2, 2, 5, true, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 1, 'watson toh', 1400169600, 4, 'train', 7, 3, 4, 5, 10, 8, 7, 7, 3, 7, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 2, 'watson toh', 1400169600, 4, 'train', 3, 8, 10, 4, 6, 10, 5, 2, 3, 5, true, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 3, 'watson toh', 1400169600, 4, 'train', 6, 5, 2, 8, 2, 10, 3, 5, 7, 5, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 4, 'watson toh', 1400169600, 4, 'train', 9, 4, 3, 10, 2, 5, 8, 2, 10, 9, false, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 5, 'watson toh', 1400169600, 4, 'train', 1, 1, 1, 9, 7, 10, 6, 1, 8, 1, true, 'bad', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 6, 'watson toh', 1400169600, 4, 'train', 8, 2, 1, 4, 2, 6, 10, 4, 10, 1, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 7, 'watson toh', 1400169600, 4, 'train', 1, 5, 1, 10, 5, 1, 8, 9, 5, 6, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 8, 'watson toh', 1400169600, 4, 'train', 3, 6, 8, 7, 2, 6, 10, 5, 8, 3, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 9, 'watson toh', 1400169600, 4, 'train', 6, 7, 4, 7, 3, 4, 1, 7, 1, 3, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 10, 'watson toh', 1400169600, 4, 'train', 4, 3, 4, 2, 3, 4, 9, 6, 6, 3, false, 'bad', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 11, 'watson toh', 1400169600, 4, 'train', 7, 9, 7, 5, 4, 5, 5, 4, 8, 8, true, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 12, 'watson toh', 1400169600, 4, 'train', 6, 1, 5, 9, 9, 7, 1, 4, 6, 8, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 13, 'watson toh', 1400169600, 4, 'train', 6, 1, 10, 6, 8, 1, 5, 4, 3, 6, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 14, 'watson toh', 1400169600, 4, 'train', 6, 6, 4, 8, 6, 5, 5, 9, 3, 1, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 15, 'watson toh', 1400169600, 4, 'train', 1, 2, 9, 7, 10, 2, 4, 1, 3, 5, true, 'bad', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 16, 'watson toh', 1400169600, 4, 'train', 1, 6, 5, 10, 9, 7, 9, 6, 3, 1, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 17, 'watson toh', 1400169600, 4, 'train', 5, 3, 4, 5, 5, 1, 4, 1, 6, 6, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 18, 'watson toh', 1400169600, 4, 'train', 2, 9, 10, 6, 2, 2, 1, 10, 3, 5, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 19, 'watson toh', 1400169600, 4, 'train', 2, 1, 2, 5, 7, 9, 9, 1, 6, 1, true, 'bad', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 20, 'watson toh', 1400169600, 4, 'train', 7, 3, 3, 4, 7, 4, 6, 5, 10, 8, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 21, 'watson toh', 1400169600, 4, 'train', 7, 3, 9, 1, 5, 6, 7, 3, 3, 1, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 22, 'watson toh', 1400169600, 4, 'train', 3, 1, 7, 1, 5, 4, 3, 3, 1, 7, true, 'bad', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 23, 'watson toh', 1400169600, 4, 'train', 9, 4, 3, 10, 10, 4, 6, 3, 10, 7, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 24, 'watson toh', 1400169600, 4, 'train', 5, 1, 9, 4, 6, 5, 5, 5, 4, 3, true, 'bad', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 25, 'watson toh', 1400169600, 4, 'train', 1, 10, 8, 6, 7, 10, 3, 10, 4, 5, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 26, 'watson toh', 1400169600, 4, 'train', 10, 5, 9, 2, 6, 2, 4, 10, 5, 3, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 27, 'watson toh', 1400169600, 4, 'train', 2, 7, 7, 10, 6, 6, 2, 8, 10, 2, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 28, 'watson toh', 1400169600, 4, 'train', 4, 9, 3, 10, 5, 10, 10, 7, 4, 8, true, 'good', false),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 29, 'watson toh', 1400169600, 4, 'train', 2, 10, 9, 2, 9, 4, 6, 6, 8, 1, true, 'good', true),
+          ((SELECT id FROM user_positions WHERE user_id = (SELECT id FROM users WHERE username = 'admin') AND position = 'FIS'), 30, 'watson toh', 1400169600, 4, 'train', 4, 10, 6, 8, 1, 9, 9, 7, 3, 9, true, 'good', false);
     `,
       async (err: Error, res: any) => {
         if (err) {
-          await client.query("ROLLBACK;");
+          // await client.query("ROLLBACK;");
           throw err;
         }
         console.log("Inserted Seed");
