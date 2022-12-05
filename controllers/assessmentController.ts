@@ -80,6 +80,32 @@ const createAssessment = async (req: AssessmentRequest, res: Response) => {
     assessment_scenarios_query_array.pop();
     assessment_scenarios_query = assessment_scenarios_query_array.join("");
 
+    let scenario_requirements_query = "";
+    for (let i = 1; i <= Object.keys(scenarios).length; i++) {
+      if (scenarios[`scenario${i}`]) {
+        assessment_scenarios_query += `
+          WITH scenario_count AS (
+            SELECT COUNT(assessment_scenarios.scenario_id) AS scenario_count FROM assessment_scenarios
+            JOIN assessments ON assessments.id = assessment_scenarios.assessment_id
+            WHERE assessments.user_position_id = '${user_position_id}' AND scenario_id = '${
+          scenarios[`scenario${i}`]
+        }'), live_scenario_count AS (
+            SELECT COUNT(assessment_scenarios.scenario_id) AS live_scenario_count FROM assessment_scenarios
+            JOIN assessments ON assessments.id = assessment_scenarios.assessment_id
+            WHERE assessments.user_position_id = '${user_position_id}' AND scenario_id = '${
+          scenarios[`scenario${i}`]
+        }' AND assessments.is_simulator = false
+          )
+          UPDATE scenario_requirements
+          SET fulfilled = scenario_count.scenario_count, live_fulfilled = live_scenario_count.live_scenario_count
+          FROM scenario_count, live_scenario_count
+          WHERE user_position_id = '${user_position_id}' AND scenario_id = '${
+          scenarios[`scenario${i}`]
+        }';
+        `;
+      }
+    }
+
     // Database Queries
     let query = `
       BEGIN;
@@ -95,11 +121,17 @@ const createAssessment = async (req: AssessmentRequest, res: Response) => {
           ${a}, ${b}, ${c}, ${d}, ${e}, ${f}, ${g}, ${h}, ${i}, ${j},
           ${safety}, '${remarks}', ${is_simulator})
           RETURNING id, grade
-      ), assessment_scenarios AS (
+      ),
+
+      -- Insert into Assessment Scenarios
+      assessment_scenarios AS (
         INSERT INTO assessment_scenarios (assessment_id, scenario_id)
         VALUES ${assessment_scenarios_query}
       ) 
       SELECT id, grade FROM assessment;
+
+      -- Update Scenario Requirements
+      ${scenario_requirements_query}
 
       COMMIT;
     `;
@@ -152,10 +184,56 @@ const updateAssessment = async (req: AssessmentRequest, res: Response) => {
       safety,
       is_simulator,
       remarks,
+      scenarios,
     } = req.body;
+
+    let assessment_scenarios_query = "";
+    for (let i = 1; i <= Object.keys(scenarios).length; i++) {
+      if (scenarios[`scenario${i}`]) {
+        assessment_scenarios_query += `('${assessment_id}', '${
+          scenarios[`scenario${i}`]
+        }'),`;
+      }
+    }
+    const assessment_scenarios_query_array =
+      assessment_scenarios_query.split("");
+    assessment_scenarios_query_array.pop();
+    assessment_scenarios_query = assessment_scenarios_query_array.join("");
+
+    let scenario_requirements_query = "";
+    for (let i = 1; i <= Object.keys(scenarios).length; i++) {
+      if (scenarios[`scenario${i}`]) {
+        assessment_scenarios_query += `
+          WITH scenario_count AS (
+            SELECT COUNT(assessment_scenarios.scenario_id) AS scenario_count FROM assessment_scenarios
+            JOIN assessments ON assessments.id = assessment_scenarios.assessment_id
+            WHERE assessments.user_position_id = '${user_position_id}' AND scenario_id = '${
+          scenarios[`scenario${i}`]
+        }'), live_scenario_count AS (
+            SELECT COUNT(assessment_scenarios.scenario_id) AS live_scenario_count FROM assessment_scenarios
+            JOIN assessments ON assessments.id = assessment_scenarios.assessment_id
+            WHERE assessments.user_position_id = '${user_position_id}' AND scenario_id = '${
+          scenarios[`scenario${i}`]
+        }' AND assessments.is_simulator = false
+          )
+          UPDATE scenario_requirements
+          SET fulfilled = scenario_count.scenario_count, live_fulfilled = live_scenario_count.live_scenario_count
+          FROM scenario_count, live_scenario_count
+          WHERE user_position_id = '${user_position_id}' AND scenario_id = '${
+          scenarios[`scenario${i}`]
+        }';
+        `;
+      }
+    }
 
     // Update assessment
     let query = `
+      BEGIN;
+
+      -- Delete Previous Assessment Scenarios
+      DELETE FROM assessment_scenarios WHERE assessment_id = '${assessment_id}';
+
+      -- Update Assessment Details
       UPDATE assessments SET 
         user_position_id = '${user_position_id}',
         assessment_number =  ${assessment_number},
@@ -172,11 +250,20 @@ const updateAssessment = async (req: AssessmentRequest, res: Response) => {
         is_simulator = ${is_simulator}
       WHERE id = '${assessment_id}'
       RETURNING grade;
+
+      -- Insert New Assessment Scenarios
+      INSERT INTO assessment_scenarios (assessment_id, scenario_id)
+      VALUES ${assessment_scenarios_query};
+
+      -- Update Scenario Requirements
+      ${scenario_requirements_query}
+
+      COMMIT;
     `;
     let result = await client.query(query);
 
     const assessment = {
-      grade: result.rows[0].grade,
+      grade: result[2].rows[0].grade,
     };
     const data: any = { assessment };
 
