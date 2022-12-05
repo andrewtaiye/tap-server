@@ -209,7 +209,7 @@ const updateAssessment = async (req: AssessmentRequest, res: Response) => {
     let scenario_requirements_query = "";
     for (let i = 1; i <= Object.keys(scenarios).length; i++) {
       if (scenarios[`scenario${i}`]) {
-        assessment_scenarios_query += `
+        scenario_requirements_query += `
           WITH scenario_count AS (
             SELECT COUNT(assessment_scenarios.scenario_id) AS scenario_count FROM assessment_scenarios
             JOIN assessments ON assessments.id = assessment_scenarios.assessment_id
@@ -334,13 +334,50 @@ const getScenarios = async (req: AssessmentRequest, res: Response) => {
       data.access = req.newToken;
     }
 
-    console.log("Retrieved Scenarios");
-    res.json({ status: "ok", message: "Retrieved Scenarios", data });
+    console.log("Retrieved scenarios");
+    res.json({ status: "ok", message: "Retrieved scenarios", data });
   } catch (err: any) {
     console.error(err.message);
     res
       .status(400)
-      .json({ status: "error", message: "Failed to delete assessment" });
+      .json({ status: "error", message: "Failed to retrieve scenarios" });
+  }
+};
+
+const getAssessmentScenarios = async (
+  req: AssessmentRequest,
+  res: Response
+) => {
+  try {
+    const { assessment_id, position } = req.params;
+
+    let query = `
+      WITH scenario_id AS (
+        SELECT scenario_id
+        FROM assessment_scenarios
+        WHERE assessment_scenarios.assessment_id = '${assessment_id}'
+      )
+      SELECT scenarios.scenario_number, scenario_id.scenario_id
+      FROM scenarios
+      LEFT JOIN scenario_id ON scenario_id = scenarios.id
+      WHERE scenarios.position = '${position}';
+    `;
+    let result = await client.query(query);
+
+    const assessment_scenarios = result.rows;
+    const data: any = { assessment_scenarios };
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("Retrieved assessment scenarios");
+    res.json({ status: "ok", message: "Retrieved assessment scenarios", data });
+  } catch (err: any) {
+    console.error(err.message);
+    res
+      .status(400)
+      .json({ status: "error", message: "Failed to assessment scenarios" });
   }
 };
 
@@ -350,4 +387,5 @@ module.exports = {
   updateAssessment,
   deleteAssessment,
   getScenarios,
+  getAssessmentScenarios,
 };
