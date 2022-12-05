@@ -267,41 +267,12 @@ const seed = async (seedAll: boolean) => {
     await client.query(
       `
       BEGIN;
-          INSERT INTO ranks (rank) VALUES ('2LT');
-          INSERT INTO ranks (rank) VALUES ('LTA');
-          INSERT INTO ranks (rank) VALUES ('CPT');
-          INSERT INTO ranks (rank) VALUES ('MAJ');
-          INSERT INTO ranks (rank) VALUES ('LTC');
-          INSERT INTO ranks (rank) VALUES ('SLTC');
-          INSERT INTO ranks (rank) VALUES ('COL');
-          INSERT INTO ranks (rank) VALUES ('BG');
-          INSERT INTO ranks (rank) VALUES ('MG');
-          INSERT INTO ranks (rank) VALUES ('LG');
-          INSERT INTO cats (cat, is_upgrade) VALUES ('A', true);
-          INSERT INTO cats (cat, is_upgrade) VALUES ('B', true);
-          INSERT INTO cats (cat, is_upgrade) VALUES ('C', true);
-          INSERT INTO cats (cat, is_upgrade) VALUES ('D', false);
-          INSERT INTO cats (cat, is_upgrade) VALUES ('CNX', true);
-          INSERT INTO flights (flight) VALUES ('HQ');
-          INSERT INTO flights (flight) VALUES ('S3');
-          INSERT INTO flights (flight) VALUES ('APP');
-          INSERT INTO flights (flight) VALUES ('AREA');
-          INSERT INTO flights (flight) VALUES ('OPS HUB');
-          INSERT INTO flights (flight) VALUES ('PARTICIPATION');
-          INSERT INTO flights (flight) VALUES ('TRAINING');
-          INSERT INTO flights (flight) VALUES ('CMS');
-          INSERT INTO positions (position, category) VALUES ('CNX', 'CNX');
-          INSERT INTO positions (position, category) VALUES ('FIS', 'SUP');
-          INSERT INTO positions (position, category) VALUES ('DEP', 'AREA');
-          INSERT INTO positions (position, category) VALUES ('ARR', 'AREA');
-          INSERT INTO positions (position, category) VALUES ('TAP', 'APP');
-          INSERT INTO positions (position, category) VALUES ('TAC', 'SUP');
-          INSERT INTO positions (position, category) VALUES ('PAP', 'APP');
-          INSERT INTO positions (position, category) VALUES ('PAC', 'SUP');
-          INSERT INTO positions (position, category) VALUES ('ISL', 'APP');
-          INSERT INTO scenario_categories (scenario_category) VALUES ('BEGINNER');
-          INSERT INTO scenario_categories (scenario_category) VALUES ('INTERMEDIATE');
-          INSERT INTO scenario_categories (scenario_category) VALUES ('ADVANCED');
+          INSERT INTO ranks (rank) VALUES ('2LT'), ('LTA'), ('CPT'), ('MAJ'), ('LTC'), ('SLTC'), ('COL'), ('BG'), ('MG'), ('LG');
+          INSERT INTO cats (cat, is_upgrade) VALUES ('A', true), ('B', true), ('C', true), ('D', false), ('CNX', true);
+          INSERT INTO flights (flight) VALUES ('HQ'), ('S3'), ('APP'), ('AREA'), ('OPS HUB'), ('PARTICIPATION'), ('TRAINING'), ('CMS');
+          INSERT INTO positions (position, category) VALUES ('CNX', 'CNX'), ('FIS', 'SUP'), ('DEP', 'AREA'), ('ARR', 'AREA'), ('TAP', 'APP'), ('TAC', 'SUP'), ('PAP', 'APP'), ('PAC', 'SUP'), ('ISL', 'APP');
+          INSERT INTO scenario_categories (scenario_category) VALUES ('BEGINNER'), ('INTERMEDIATE'), ('ADVANCED');
+          
           -- Insert Scenarios
           INSERT INTO scenarios
           (position, scenario_number, scenario_category, first_position_requirement, subsequent_position_requirement, revalidation_requirement, first_position_live_requirement, subsequent_position_live_requirement, revalidation_live_requirement)
