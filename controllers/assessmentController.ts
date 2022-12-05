@@ -16,14 +16,20 @@ const getAssessment = async (req: AssessmentRequest, res: Response) => {
       ORDER BY date, assessment_number;
     `;
     let result = await client.query(query);
+    const assessments = result.rows;
 
     // Retrieved but no assessments
     if (result.rowCount === 0) {
-      res.json({ status: "ok", message: "Positions has no assessments" });
+      const data: any = {};
+
+      if (req.newToken) {
+        data.access = req.newToken;
+      }
+
+      res.json({ status: "ok", message: "Positions has no assessments", data });
       return;
     }
 
-    const assessments = result.rows;
     const data: any = { assessments };
 
     if (req.newToken) {
