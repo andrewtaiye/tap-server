@@ -198,8 +198,14 @@ const deleteAssessment = async (req: AssessmentRequest, res: Response) => {
   try {
     const { assessment_id } = req.params;
 
+    // Delete assessment scenarios
+    let query = `
+      DELETE FROM assessment_scenarios WHERE assessment_id = '${assessment_id}';
+    `;
+    await client.query(query);
+
     // Delete assessment
-    let query = `DELETE FROM assessments WHERE id = '${assessment_id}';`;
+    query = `DELETE FROM assessments WHERE id = '${assessment_id}';`;
     await client.query(query);
 
     const data: any = {};
