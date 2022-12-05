@@ -64,25 +64,50 @@ const createAssessment = async (req: AssessmentRequest, res: Response) => {
       safety,
       is_simulator,
       remarks,
+      scenarios,
     } = req.body;
 
-    // Create new assessment
+    let assessment_scenarios_query = "";
+    for (let i = 1; i <= Object.keys(scenarios).length; i++) {
+      if (scenarios[`scenario${i}`]) {
+        assessment_scenarios_query += `((SELECT id FROM assessment), '${
+          scenarios[`scenario${i}`]
+        }'),`;
+      }
+    }
+    const assessment_scenarios_query_array =
+      assessment_scenarios_query.split("");
+    assessment_scenarios_query_array.pop();
+    assessment_scenarios_query = assessment_scenarios_query_array.join("");
+
+    // Database Queries
     let query = `
-      INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, objective2, objective3, a, b, c, d, e, f, g, h, i, j, safety, remarks, is_simulator)
-      VALUES (
-        '${user_position_id}', ${assessment_number}, '${instructor}', ${date}, ${intensity},
-        '${objective1}',
-        ${objective2 ? `'${objective2}'` : null},
-        ${objective3 ? `'${objective3}'` : null},
-        ${a}, ${b}, ${c}, ${d}, ${e}, ${f}, ${g}, ${h}, ${i}, ${j},
-        ${safety}, '${remarks}', ${is_simulator})
-      RETURNING id, grade;
+      BEGIN;
+
+      -- Create New Assessment
+      WITH assessment AS (
+        INSERT INTO assessments (user_position_id, assessment_number, instructor, date, intensity, objective1, objective2, objective3, a, b, c, d, e, f, g, h, i, j, safety, remarks, is_simulator)
+        VALUES (
+          '${user_position_id}', ${assessment_number}, '${instructor}', ${date}, ${intensity},
+          '${objective1}',
+          ${objective2 ? `'${objective2}'` : null},
+          ${objective3 ? `'${objective3}'` : null},
+          ${a}, ${b}, ${c}, ${d}, ${e}, ${f}, ${g}, ${h}, ${i}, ${j},
+          ${safety}, '${remarks}', ${is_simulator})
+          RETURNING id, grade
+      ), assessment_scenarios AS (
+        INSERT INTO assessment_scenarios (assessment_id, scenario_id)
+        VALUES ${assessment_scenarios_query}
+      ) 
+      SELECT id, grade FROM assessment;
+
+      COMMIT;
     `;
     let result = await client.query(query);
 
     const assessment = {
-      id: result.rows[0].id,
-      grade: result.rows[0].grade,
+      id: result[1].rows[0].id,
+      grade: result[1].rows[0].grade,
     };
 
     const data: any = { assessment };
@@ -95,6 +120,7 @@ const createAssessment = async (req: AssessmentRequest, res: Response) => {
     res.json({ status: "ok", message: "Assessment created", data });
   } catch (err: any) {
     console.error(err.message);
+    await client.query("ROLLBACK;");
     res
       .status(400)
       .json({ status: "error", message: "Failed to create assessment" });
@@ -197,13 +223,13 @@ const getScenarios = async (req: AssessmentRequest, res: Response) => {
     const { position } = req.params;
 
     let query = `
-    SELECT scenario_number FROM scenarios WHERE position = '${position}';
+    SELECT id, scenario_number FROM scenarios WHERE position = '${position}';
 `;
     let result = await client.query(query);
 
-    const scenario_count = result.rows;
+    const scenarios = result.rows;
 
-    const data: any = { scenario_count };
+    const data: any = { scenarios };
 
     if (req.newToken) {
       data.access = req.newToken;
