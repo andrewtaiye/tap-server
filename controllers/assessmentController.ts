@@ -38,6 +38,10 @@ const getAssessment = async (req: AssessmentRequest, res: Response) => {
       WHERE user_position_id = '${user_position_id}' AND scenario_category = 'ADVANCED'
       ORDER BY scenarios.scenario_number;
 
+      SELECT SUM(scenario_requirements.requirement)::SMALLINT requirement, SUM(scenario_requirements.fulfilled)::SMALLINT fulfilled
+      FROM scenario_requirements
+      WHERE user_position_id = '${user_position_id}';
+
       COMMIT;
     `;
     let result = await client.query(query);
@@ -49,23 +53,7 @@ const getAssessment = async (req: AssessmentRequest, res: Response) => {
       advanced: result[4].rows,
     };
 
-    const count = { required: 0, fulfilled: 0 };
-    for (let category of Object.keys(scenarios)) {
-      for (let scenario of scenarios[category]) {
-        count.required += scenario.requirement;
-        const live =
-          scenario.live_fulfilled > scenario.requirement
-            ? scenario.requirement
-            : scenario.live_fulfilled;
-        const sim =
-          scenario.fulfilled - scenario.live_fulfilled >
-          scenario.requirement - scenario.live_requirement
-            ? scenario.requirement - scenario.live_requirement
-            : scenario.fulfilled - scenario.live_fulfilled;
-        count.fulfilled +=
-          live + sim > scenario.requirement ? scenario.requirement : live + sim;
-      }
-    }
+    const count = result[5].rows[0];
 
     // Retrieved but no assessments
     if (result.rowCount === 0) {
@@ -139,25 +127,37 @@ const createAssessment = async (req: AssessmentRequest, res: Response) => {
     let scenario_requirements_query = "";
     for (let i = 1; i <= Object.keys(scenarios).length; i++) {
       if (scenarios[`scenario${i}`]) {
+        // prettier-ignore
         scenario_requirements_query += `
-          WITH scenario_count AS (
-            SELECT COUNT(assessment_scenarios.scenario_id) AS scenario_count FROM assessment_scenarios
-            JOIN assessments ON assessments.id = assessment_scenarios.assessment_id
-            WHERE assessments.user_position_id = '${user_position_id}' AND scenario_id = '${
-          scenarios[`scenario${i}`]
-        }'), live_scenario_count AS (
-            SELECT COUNT(assessment_scenarios.scenario_id) AS live_scenario_count FROM assessment_scenarios
-            JOIN assessments ON assessments.id = assessment_scenarios.assessment_id
-            WHERE assessments.user_position_id = '${user_position_id}' AND scenario_id = '${
-          scenarios[`scenario${i}`]
-        }' AND assessments.is_simulator = false
+          WITH
+          scenario_count AS (
+              SELECT COUNT(assessment_scenarios.scenario_id) AS scenario_count
+              FROM assessment_scenarios
+              JOIN assessments ON assessments.id = assessment_scenarios.assessment_id
+              WHERE assessments.user_position_id = '${user_position_id}' AND scenario_id = '${scenarios[`scenario${i}`]}'
+          ),
+          live_scenario_count AS (
+              SELECT COUNT(assessment_scenarios.scenario_id) AS live_scenario_count
+              FROM assessment_scenarios
+              JOIN assessments ON assessments.id = assessment_scenarios.assessment_id
+              WHERE assessments.user_position_id = '${user_position_id}' AND scenario_id = '${scenarios[`scenario${i}`]}' AND assessments.is_simulator = false
+          ), 
+          sim_scenario_count AS (
+              SELECT scenario_count - live_scenario_count AS sim_scenario_count
+              FROM scenario_count, live_scenario_count
+          ),
+          requirements AS (
+            SELECT requirement, live_requirement, requirement - live_requirement AS sim_requirement
+              FROM scenario_requirements
+            WHERE user_position_id = '${user_position_id}' AND scenario_id = '${scenarios[`scenario${i}`]}'
           )
           UPDATE scenario_requirements
-          SET fulfilled = scenario_count.scenario_count, live_fulfilled = live_scenario_count.live_scenario_count
-          FROM scenario_count, live_scenario_count
-          WHERE user_position_id = '${user_position_id}' AND scenario_id = '${
-          scenarios[`scenario${i}`]
-        }';
+          SET fulfilled = (
+              SELECT LEAST(requirements.requirement, live_scenario_count.live_scenario_count + LEAST(sim_scenario_count.sim_scenario_count, requirements.sim_requirement))
+              FROM live_scenario_count, sim_scenario_count, requirements
+          ), live_fulfilled = live_scenario_count.live_scenario_count
+          FROM scenario_count, live_scenario_count, sim_scenario_count, requirements
+          WHERE user_position_id = '${user_position_id}' AND scenario_id = '${scenarios[`scenario${i}`]}';
         `;
       }
     }
@@ -263,31 +263,46 @@ const updateAssessment = async (req: AssessmentRequest, res: Response) => {
     let scenario_requirements_query = "";
     for (let i = 1; i <= Object.keys(scenarios).length; i++) {
       if (scenarios[`scenario${i}`] || scenarios[`scenario${i}`] === false) {
+        // prettier-ignore
         scenario_requirements_query += `
-          WITH scenario_id AS (
-            SELECT scenario_id
-            FROM scenario_requirements
-            JOIN scenarios ON scenarios.id = scenario_requirements.scenario_id
-            WHERE user_position_id = '${user_position_id}' AND scenarios.scenario_number = ${i}
+          WITH
+          scenario_id AS (
+              SELECT scenario_id
+              FROM scenario_requirements
+              JOIN scenarios ON scenarios.id = scenario_requirements.scenario_id
+              WHERE user_position_id = '${user_position_id}' AND scenarios.scenario_number = ${i}
           ),
           scenario_count AS (
-            SELECT COUNT(assessment_scenarios.scenario_id) AS scenario_count
-            FROM assessment_scenarios
-            JOIN scenario_id ON scenario_id.scenario_id = assessment_scenarios.scenario_id
-            JOIN assessments ON assessments.id = assessment_scenarios.assessment_id
-            WHERE assessments.user_position_id = '${user_position_id}'
+              SELECT COUNT(assessment_scenarios.scenario_id) AS scenario_count
+              FROM assessment_scenarios
+              JOIN scenario_id ON scenario_id.scenario_id = assessment_scenarios.scenario_id
+              JOIN assessments ON assessments.id = assessment_scenarios.assessment_id
+              WHERE assessments.user_position_id = '${user_position_id}'
           ),
           live_scenario_count AS (
-            SELECT COUNT(assessment_scenarios.scenario_id) AS live_scenario_count
-            FROM assessment_scenarios
-            JOIN scenario_id ON scenario_id.scenario_id = assessment_scenarios.scenario_id
-            JOIN assessments ON assessments.id = assessment_scenarios.assessment_id
-            WHERE assessments.user_position_id = '${user_position_id}' AND assessments.is_simulator = false
+              SELECT COUNT(assessment_scenarios.scenario_id) AS live_scenario_count
+              FROM assessment_scenarios
+              JOIN scenario_id ON scenario_id.scenario_id = assessment_scenarios.scenario_id
+              JOIN assessments ON assessments.id = assessment_scenarios.assessment_id
+              WHERE assessments.user_position_id = '${user_position_id}' AND assessments.is_simulator = false
+          ), 
+          sim_scenario_count AS (
+              SELECT scenario_count - live_scenario_count AS sim_scenario_count
+              FROM scenario_count, live_scenario_count
+          ),
+          requirements AS (
+            SELECT requirement, live_requirement, requirement - live_requirement AS sim_requirement
+              FROM scenario_requirements
+              JOIN scenario_id ON scenario_id.scenario_id = scenario_requirements.scenario_id
+            WHERE user_position_id = '${user_position_id}'
           )
           UPDATE scenario_requirements
-          SET fulfilled = scenario_count.scenario_count, live_fulfilled = live_scenario_count.live_scenario_count
-          FROM scenario_count, live_scenario_count, scenario_id
-          WHERE scenario_requirements.user_position_id = '${user_position_id}' AND scenario_requirements.scenario_id = scenario_id.scenario_id;
+          SET fulfilled = (
+              SELECT LEAST(requirements.requirement, live_scenario_count.live_scenario_count + LEAST(sim_scenario_count.sim_scenario_count, requirements.sim_requirement))
+              FROM live_scenario_count, sim_scenario_count, requirements
+          ), live_fulfilled = live_scenario_count.live_scenario_count
+          FROM scenario_count, live_scenario_count, sim_scenario_count, requirements, scenario_id
+          WHERE user_position_id = '${user_position_id}' AND scenario_requirements.scenario_id = scenario_id.scenario_id;
         `;
       }
     }
