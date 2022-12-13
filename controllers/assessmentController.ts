@@ -383,24 +383,38 @@ const deleteAssessment = async (req: AssessmentRequest, res: Response) => {
     // For each Scenario ID, form an update query
     let scenario_requirements_query = "";
     for (let scenario of result.rows) {
+      // prettier-ignore
       scenario_requirements_query += `
-          WITH scenario_count AS (
+        WITH
+        scenario_count AS (
             SELECT COUNT(assessment_scenarios.scenario_id) AS scenario_count
             FROM assessment_scenarios
             JOIN assessments ON assessments.id = assessment_scenarios.assessment_id
-            WHERE assessments.user_position_id = '${user_position_id}' AND assessment_scenarios.scenario_id = '${scenario.scenario_id}'
-          ),
-          live_scenario_count AS (
+            WHERE assessments.user_position_id = '${user_position_id}' AND scenario_id = '${scenario.scenario_id}'
+        ),
+        live_scenario_count AS (
             SELECT COUNT(assessment_scenarios.scenario_id) AS live_scenario_count
             FROM assessment_scenarios
             JOIN assessments ON assessments.id = assessment_scenarios.assessment_id
-            WHERE assessments.user_position_id = '${user_position_id}' AND assessment_scenarios.scenario_id = '${scenario.scenario_id}' AND assessments.is_simulator = false
-          )
-          UPDATE scenario_requirements
-          SET fulfilled = scenario_count.scenario_count, live_fulfilled = live_scenario_count.live_scenario_count
-          FROM scenario_count, live_scenario_count
-          WHERE scenario_requirements.user_position_id = '${user_position_id}' AND scenario_requirements.scenario_id = '${scenario.scenario_id}';
-        `;
+            WHERE assessments.user_position_id = '${user_position_id}' AND scenario_id = '${scenario.scenario_id}' AND assessments.is_simulator = false
+        ), 
+        sim_scenario_count AS (
+            SELECT scenario_count - live_scenario_count AS sim_scenario_count
+            FROM scenario_count, live_scenario_count
+        ),
+        requirements AS (
+          SELECT requirement, live_requirement, requirement - live_requirement AS sim_requirement
+            FROM scenario_requirements
+          WHERE user_position_id = '${user_position_id}' AND scenario_id = '${scenario.scenario_id}'
+        )
+        UPDATE scenario_requirements
+        SET fulfilled = (
+            SELECT LEAST(requirements.requirement, live_scenario_count.live_scenario_count + LEAST(sim_scenario_count.sim_scenario_count, requirements.sim_requirement))
+            FROM live_scenario_count, sim_scenario_count, requirements
+        ), live_fulfilled = live_scenario_count.live_scenario_count
+        FROM scenario_count, live_scenario_count, sim_scenario_count, requirements
+        WHERE user_position_id = '${user_position_id}' AND scenario_id = '${scenario.scenario_id}';
+      `;
     }
 
     // Delete assessment scenarios and update scenario requirements
