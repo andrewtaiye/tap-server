@@ -62,10 +62,51 @@ const getTrainees = async (req: InstructorRequest, res: Response) => {
     await client.query("ROLLBACK;");
     res
       .status(400)
-      .json({ status: "error", message: "Failed to get user positions" });
+      .json({ status: "error", message: "Failed to get all trainees" });
+  }
+};
+
+const getPersonnel = async (req: InstructorRequest, res: Response) => {
+  try {
+    // Check if user is instructor
+    if (!req.decoded.is_instructor) {
+      console.log(`User ID: ${req.decoded.userId} is not an instructor`);
+      res.status(400).json({ status: "error", message: "Unauthorised access" });
+      return;
+    }
+
+    // Retrieve all trainees
+    let query = `
+      SELECT user_id, rank, full_name, cat, flight
+      FROM profiles;
+    `;
+    let result = await client.query(query);
+    const personnel = result.rows;
+
+    if (result.rowCount === 0) {
+      console.log("No personnel found");
+      res.json({ status: "ok", message: "No personnel found" });
+      return;
+    }
+
+    const data: any = { personnel };
+
+    if (req.newToken) {
+      data.access = req.newToken;
+    }
+
+    console.log("Retrieved all personnel");
+    res.json({ status: "ok", message: "Retrieved all personnel", data });
+  } catch (err: any) {
+    console.log(err);
+    await client.query("ROLLBACK;");
+    res
+      .status(400)
+      .json({ status: "error", message: "Failed to get personnel" });
   }
 };
 
 module.exports = {
   getTrainees,
+  getPersonnel,
 };
